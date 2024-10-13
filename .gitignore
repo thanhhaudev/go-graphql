@@ -24,4 +24,10 @@ go.work.sum
 # env file
 .env
 
+
+# idea
 .idea
+.vscode
+
+# build
+/tmp/*

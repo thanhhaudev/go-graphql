@@ -1,0 +1,21 @@
+services:
+  graphql:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    container_name: "go_graphql"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    container_name: "go_graphql_db"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "library"
