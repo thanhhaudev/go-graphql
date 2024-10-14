@@ -12,11 +12,6 @@ import (
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 )
 
-// ID is the resolver for the id field.
-func (r *bookResolver) ID(ctx context.Context, obj *model.Book) (string, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
-}
-
 // Authors is the resolver for the authors field.
 func (r *bookResolver) Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error) {
 	panic(fmt.Errorf("not implemented: Authors - authors"))

@@ -14,7 +14,12 @@ import (
 
 // Books is the resolver for the books field.
 func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
-	panic(fmt.Errorf("not implemented: Books - books"))
+	return []*model.Book{
+		{
+			ID:    1,
+			Title: "Book 1",
+		},
+	}, nil
 }
 
 // Authors is the resolver for the authors field.

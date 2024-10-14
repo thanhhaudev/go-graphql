@@ -12,11 +12,6 @@ import (
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 )
 
-// ID is the resolver for the id field.
-func (r *borrowerResolver) ID(ctx context.Context, obj *model.Borrower) (string, error) {
-	panic(fmt.Errorf("not implemented: ID - id"))
-}
-
 // Books is the resolver for the books field.
 func (r *borrowerResolver) Books(ctx context.Context, obj *model.Borrower) ([]*model.Book, error) {
 	panic(fmt.Errorf("not implemented: Books - books"))
