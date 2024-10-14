@@ -1,0 +1,5 @@
+type Borrower {
+  id: ID!
+  name: String!
+  books: [Book!]!
+}
