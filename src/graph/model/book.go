@@ -6,7 +6,7 @@ type BookInput struct {
 }
 
 type Book struct {
-	ID      int      `gorm:"primaryKey" json:"id"`
-	Title   string   `json:"title"`
-	Authors []Author `json:"authors"`
+	ID      int       `gorm:"primaryKey" json:"id"`
+	Title   string    `json:"title"`
+	Authors []*Author `json:"authors"`
 }
