@@ -8,14 +8,14 @@ import (
 type Author struct {
 	ID        int     `gorm:"primaryKey"`
 	Name      string  `json:"name"`
-	Books     []*Book `json:"books"`
+	Books     []*Book `gorm:"many2many:author_books" json:"books"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 func (a Author) TableName() string {
-	return "authors_books"
+	return "authors"
 }
 
 type AuthorInput struct {
