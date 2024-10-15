@@ -1,4 +1,4 @@
-.PHONY: all build run stop
+.PHONY: all build run logs generate migrate seed stop
 
 # Variables
 DOCKER_COMPOSE_FILE=docker-compose.yaml
@@ -17,3 +17,5 @@ generate:
 	go generate ./src/...
 migrate:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/migrate/main.go
+seed:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/seed/main.go
