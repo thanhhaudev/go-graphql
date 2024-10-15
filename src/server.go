@@ -7,6 +7,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/joho/godotenv"
+	"github.com/thanhhaudev/go-graphql/src/config"
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/resolver"
 )
@@ -14,10 +16,25 @@ import (
 const defaultPort = "8080"
 
 func main() {
+	// Load environment variables from .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	// Get port from environment variables or use default port
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
+
+	// Connect to database
+	db, err := config.NewDB()
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
+
+	defer db.Close() // Close database connection when main function exits
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver.NewResolver()}))
 
