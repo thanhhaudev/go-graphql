@@ -15,3 +15,5 @@ logs:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) logs -f
 generate:
 	go generate ./src/...
+migrate:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/migrate/main.go

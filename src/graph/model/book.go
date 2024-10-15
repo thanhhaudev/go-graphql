@@ -16,7 +16,7 @@ type Book struct {
 	Description string    `json:"description"`
 	Quantity    int       `json:"quantity"`
 	Rating      int       `json:"rating"`
-	Authors     []*Author `gorm:"many2many:author_books" json:"authors"`
+	Authors     []*Author `gorm:"many2many:authors_books" json:"authors"`
 	PublishAt   time.Time `json:"publishAt"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

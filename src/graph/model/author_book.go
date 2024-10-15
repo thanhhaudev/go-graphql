@@ -14,5 +14,5 @@ type AuthorBook struct {
 }
 
 func (AuthorBook) TableName() string {
-	return "author_books"
+	return "authors_books"
 }

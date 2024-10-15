@@ -8,7 +8,7 @@ import (
 type Author struct {
 	ID        int     `gorm:"primaryKey"`
 	Name      string  `json:"name"`
-	Books     []*Book `gorm:"many2many:author_books" json:"books"`
+	Books     []*Book `gorm:"many2many:authors_books" json:"books"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`

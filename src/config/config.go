@@ -39,6 +39,10 @@ func NewDB() (*DBConfig, error) {
 	return &DBConfig{gormDB: db}, nil
 }
 
+func (dbc *DBConfig) DB() *gorm.DB {
+	return dbc.gormDB
+}
+
 func (dbc *DBConfig) Close() error {
 	sqlDB, err := dbc.gormDB.DB()
 	if err != nil {
