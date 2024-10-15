@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -49,20 +50,27 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Author struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 
 	Book struct {
-		Authors func(childComplexity int) int
-		ID      func(childComplexity int) int
-		Title   func(childComplexity int) int
+		Authors   func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		PublishAt func(childComplexity int) int
+		Title     func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 
 	Borrower struct {
-		Books func(childComplexity int) int
-		ID    func(childComplexity int) int
-		Name  func(childComplexity int) int
+		Books     func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -124,6 +132,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Author.createdAt":
+		if e.complexity.Author.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Author.CreatedAt(childComplexity), true
+
 	case "Author.id":
 		if e.complexity.Author.ID == nil {
 			break
@@ -138,12 +153,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Author.Name(childComplexity), true
 
+	case "Author.updatedAt":
+		if e.complexity.Author.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Author.UpdatedAt(childComplexity), true
+
 	case "Book.authors":
 		if e.complexity.Book.Authors == nil {
 			break
 		}
 
 		return e.complexity.Book.Authors(childComplexity), true
+
+	case "Book.createdAt":
+		if e.complexity.Book.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Book.CreatedAt(childComplexity), true
 
 	case "Book.id":
 		if e.complexity.Book.ID == nil {
@@ -152,6 +181,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Book.ID(childComplexity), true
 
+	case "Book.publishAt":
+		if e.complexity.Book.PublishAt == nil {
+			break
+		}
+
+		return e.complexity.Book.PublishAt(childComplexity), true
+
 	case "Book.title":
 		if e.complexity.Book.Title == nil {
 			break
@@ -159,12 +195,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Book.Title(childComplexity), true
 
+	case "Book.updatedAt":
+		if e.complexity.Book.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Book.UpdatedAt(childComplexity), true
+
 	case "Borrower.books":
 		if e.complexity.Borrower.Books == nil {
 			break
 		}
 
 		return e.complexity.Borrower.Books(childComplexity), true
+
+	case "Borrower.createdAt":
+		if e.complexity.Borrower.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Borrower.CreatedAt(childComplexity), true
 
 	case "Borrower.id":
 		if e.complexity.Borrower.ID == nil {
@@ -179,6 +229,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Borrower.Name(childComplexity), true
+
+	case "Borrower.updatedAt":
+		if e.complexity.Borrower.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Borrower.UpdatedAt(childComplexity), true
 
 	case "Mutation.borrowBook":
 		if e.complexity.Mutation.BorrowBook == nil {
@@ -404,15 +461,19 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/author.graphqls", Input: `type Author {
-    id: ID!
+	{Name: "../schema/author.graphqls", Input: `input AuthorInput {
     name: String!
 }
 
-input AuthorInput {
+type Author {
+    id: ID!
     name: String!
+    createdAt: Time!
+    updatedAt: Time!
 }`, BuiltIn: false},
-	{Name: "../schema/book.graphqls", Input: `input BookInput {
+	{Name: "../schema/book.graphqls", Input: `scalar Time
+
+input BookInput {
     title: String!
     authorIds: [ID!]!
 }
@@ -421,12 +482,17 @@ type Book {
     id: ID!
     title: String!
     authors: [Author!]!
+    publishAt: Time!
+    createdAt: Time!
+    updatedAt: Time!
 }
 `, BuiltIn: false},
 	{Name: "../schema/borrower.graphqls", Input: `type Borrower {
   id: ID!
   name: String!
   books: [Book!]!
+  createdAt: Time!
+  updatedAt: Time!
 }
 `, BuiltIn: false},
 	{Name: "../schema/mutation.graphqls", Input: `type Mutation {
@@ -838,6 +904,94 @@ func (ec *executionContext) fieldContext_Author_name(_ context.Context, field gr
 	return fc, nil
 }
 
+func (ec *executionContext) _Author_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Author) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Author_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Author_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Author",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Author_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Author) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Author_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Author_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Author",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Book_id(ctx context.Context, field graphql.CollectedField, obj *model.Book) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Book_id(ctx, field)
 	if err != nil {
@@ -969,8 +1123,144 @@ func (ec *executionContext) fieldContext_Book_authors(_ context.Context, field g
 				return ec.fieldContext_Author_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Author_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Author_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Author_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Author", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Book_publishAt(ctx context.Context, field graphql.CollectedField, obj *model.Book) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Book_publishAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PublishAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Book_publishAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Book",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Book_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Book) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Book_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Book_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Book",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Book_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Book) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Book_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Book_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Book",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1109,8 +1399,102 @@ func (ec *executionContext) fieldContext_Borrower_books(_ context.Context, field
 				return ec.fieldContext_Book_title(ctx, field)
 			case "authors":
 				return ec.fieldContext_Book_authors(ctx, field)
+			case "publishAt":
+				return ec.fieldContext_Book_publishAt(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Book_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Book_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Book", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Borrower_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Borrower) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Borrower_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Borrower_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Borrower",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Borrower_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Borrower) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Borrower_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Borrower_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Borrower",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1161,6 +1545,12 @@ func (ec *executionContext) fieldContext_Mutation_createBook(ctx context.Context
 				return ec.fieldContext_Book_title(ctx, field)
 			case "authors":
 				return ec.fieldContext_Book_authors(ctx, field)
+			case "publishAt":
+				return ec.fieldContext_Book_publishAt(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Book_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Book_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Book", field.Name)
 		},
@@ -1222,6 +1612,10 @@ func (ec *executionContext) fieldContext_Mutation_createAuthor(ctx context.Conte
 				return ec.fieldContext_Author_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Author_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Author_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Author_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Author", field.Name)
 		},
@@ -1285,6 +1679,10 @@ func (ec *executionContext) fieldContext_Mutation_createBorrower(ctx context.Con
 				return ec.fieldContext_Borrower_name(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Borrower_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Borrower_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Borrower", field.Name)
 		},
@@ -1348,6 +1746,10 @@ func (ec *executionContext) fieldContext_Mutation_borrowBook(ctx context.Context
 				return ec.fieldContext_Borrower_name(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Borrower_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Borrower_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Borrower", field.Name)
 		},
@@ -1411,6 +1813,10 @@ func (ec *executionContext) fieldContext_Mutation_returnBook(ctx context.Context
 				return ec.fieldContext_Borrower_name(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Borrower_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Borrower_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Borrower", field.Name)
 		},
@@ -1474,6 +1880,12 @@ func (ec *executionContext) fieldContext_Query_books(_ context.Context, field gr
 				return ec.fieldContext_Book_title(ctx, field)
 			case "authors":
 				return ec.fieldContext_Book_authors(ctx, field)
+			case "publishAt":
+				return ec.fieldContext_Book_publishAt(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Book_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Book_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Book", field.Name)
 		},
@@ -1524,6 +1936,10 @@ func (ec *executionContext) fieldContext_Query_authors(_ context.Context, field 
 				return ec.fieldContext_Author_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Author_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Author_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Author_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Author", field.Name)
 		},
@@ -1576,6 +1992,10 @@ func (ec *executionContext) fieldContext_Query_borrowers(_ context.Context, fiel
 				return ec.fieldContext_Borrower_name(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Borrower_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Borrower_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Borrower", field.Name)
 		},
@@ -1625,6 +2045,12 @@ func (ec *executionContext) fieldContext_Query_book(ctx context.Context, field g
 				return ec.fieldContext_Book_title(ctx, field)
 			case "authors":
 				return ec.fieldContext_Book_authors(ctx, field)
+			case "publishAt":
+				return ec.fieldContext_Book_publishAt(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Book_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Book_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Book", field.Name)
 		},
@@ -1683,6 +2109,10 @@ func (ec *executionContext) fieldContext_Query_author(ctx context.Context, field
 				return ec.fieldContext_Author_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Author_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Author_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Author_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Author", field.Name)
 		},
@@ -1743,6 +2173,10 @@ func (ec *executionContext) fieldContext_Query_borrower(ctx context.Context, fie
 				return ec.fieldContext_Borrower_name(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Borrower_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Borrower_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Borrower", field.Name)
 		},
@@ -3753,6 +4187,16 @@ func (ec *executionContext) _Author(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createdAt":
+			out.Values[i] = ec._Author_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Author_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3833,6 +4277,21 @@ func (ec *executionContext) _Book(ctx context.Context, sel ast.SelectionSet, obj
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "publishAt":
+			out.Values[i] = ec._Book_publishAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "createdAt":
+			out.Values[i] = ec._Book_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Book_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3913,6 +4372,16 @@ func (ec *executionContext) _Borrower(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "createdAt":
+			out.Values[i] = ec._Borrower_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Borrower_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4780,6 +5249,21 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

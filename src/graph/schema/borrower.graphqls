@@ -2,4 +2,6 @@ type Borrower {
   id: ID!
   name: String!
   books: [Book!]!
+  createdAt: Time!
+  updatedAt: Time!
 }

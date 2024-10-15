@@ -1,8 +1,10 @@
-type Author {
-    id: ID!
+input AuthorInput {
     name: String!
 }
 
-input AuthorInput {
+type Author {
+    id: ID!
     name: String!
+    createdAt: Time!
+    updatedAt: Time!
 }
