@@ -38,14 +38,16 @@ func main() {
 
 	authorRepo := postgres.NewAuthorRepository(db.DB())
 	bookRepo := postgres.NewBookRepository(db.DB())
+	borrowerRepo := postgres.NewBorrowerRepository(db.DB())
 
 	authorService := service.NewAuthorService(authorRepo)
 	bookService := service.NewBookService(bookRepo)
+	borrowerService := service.NewBorrowerService(borrowerRepo)
 
 	defer db.Close() // Close database connection when main function exits
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
-		Resolvers: resolver.NewResolver(authorService, bookService),
+		Resolvers: resolver.NewResolver(authorService, bookService, borrowerService),
 	}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))

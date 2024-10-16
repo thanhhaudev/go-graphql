@@ -22,8 +22,8 @@ type AuthorRepository interface {
 }
 
 type BorrowerRepository interface {
-	FindAll() ([]*model.Borrower, error)
-	FindByID(id int) (*model.Borrower, error)
-	Create(input *model.BorrowerInput) error
-	Update(input *model.BorrowerInput) error
+	FindAll(ctx context.Context) ([]*model.Borrower, error)
+	FindByID(ctx context.Context, id int) (*model.Borrower, error)
+	Create(ctx context.Context, input *model.BorrowerInput) error
+	Update(ctx context.Context, input *model.BorrowerInput) error
 }
