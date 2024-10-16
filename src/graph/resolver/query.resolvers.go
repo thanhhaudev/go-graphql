@@ -15,12 +15,12 @@ import (
 
 // Books is the resolver for the books field.
 func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
-	return []*model.Book{
-		{
-			ID:    1,
-			Title: "Book 1",
-		},
-	}, nil
+	books, err := r.bookService.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return books, nil
 }
 
 // Authors is the resolver for the authors field.
@@ -40,7 +40,17 @@ func (r *queryResolver) Borrowers(ctx context.Context) ([]*model.Borrower, error
 
 // Book is the resolver for the book field.
 func (r *queryResolver) Book(ctx context.Context, id string) (*model.Book, error) {
-	panic(fmt.Errorf("not implemented: Book - book"))
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := r.bookService.FindByID(ctx, intID)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // Author is the resolver for the author field.
