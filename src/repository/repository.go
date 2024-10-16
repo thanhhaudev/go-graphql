@@ -8,6 +8,7 @@ import (
 type BookRepository interface {
 	FindAll(ctx context.Context) ([]*model.Book, error)
 	FindByID(ctx context.Context, id int) (*model.Book, error)
+	FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error)
 	Create(ctx context.Context, input *model.BookInput) error
 	Update(ctx context.Context, input *model.BookInput) error
 	Delete(ctx context.Context, id int) error

@@ -11,7 +11,16 @@ type bookRepository struct {
 	db *gorm.DB
 }
 
-func (b bookRepository) FindAll(ctx context.Context) ([]*model.Book, error) {
+func (b *bookRepository) FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error) {
+	var author model.Author
+	if err := b.db.WithContext(ctx).Preload("Books").First(&author, authorID).Error; err != nil {
+		return nil, err
+	}
+
+	return author.Books, nil
+}
+
+func (b *bookRepository) FindAll(ctx context.Context) ([]*model.Book, error) {
 	var books []*model.Book
 	if err := b.db.WithContext(ctx).Find(&books).Error; err != nil {
 		return nil, err
@@ -20,7 +29,7 @@ func (b bookRepository) FindAll(ctx context.Context) ([]*model.Book, error) {
 	return books, nil
 }
 
-func (b bookRepository) FindByID(ctx context.Context, id int) (*model.Book, error) {
+func (b *bookRepository) FindByID(ctx context.Context, id int) (*model.Book, error) {
 	var book model.Book
 	if err := b.db.WithContext(ctx).First(&book, id).Error; err != nil {
 		return nil, err
@@ -29,17 +38,17 @@ func (b bookRepository) FindByID(ctx context.Context, id int) (*model.Book, erro
 	return &book, nil
 }
 
-func (b bookRepository) Create(ctx context.Context, input *model.BookInput) error {
+func (b *bookRepository) Create(ctx context.Context, input *model.BookInput) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (b bookRepository) Update(ctx context.Context, input *model.BookInput) error {
+func (b *bookRepository) Update(ctx context.Context, input *model.BookInput) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (b bookRepository) Delete(ctx context.Context, id int) error {
+func (b *bookRepository) Delete(ctx context.Context, id int) error {
 	//TODO implement me
 	panic("implement me")
 }

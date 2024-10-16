@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
@@ -14,7 +13,12 @@ import (
 
 // Books is the resolver for the books field.
 func (r *authorResolver) Books(ctx context.Context, obj *model.Author) ([]*model.Book, error) {
-	panic(fmt.Errorf("not implemented: Books - books"))
+	books, err := r.bookService.FindBooksByAuthorID(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return books, nil
 }
 
 // Author returns generated.AuthorResolver implementation.
