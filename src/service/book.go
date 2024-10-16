@@ -10,6 +10,19 @@ type BookService struct {
 	bookRepository repository.BookRepository
 }
 
+func (b *BookService) Create(ctx context.Context, input *model.CreateBookInput) (*model.Book, error) {
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+
+	book := input.ToBook()
+	if err := b.bookRepository.Create(ctx, book); err != nil {
+		return nil, err
+	}
+
+	return book, nil
+}
+
 func (b *BookService) FindAll(ctx context.Context) ([]*model.Book, error) {
 	return b.bookRepository.FindAll(ctx)
 }
