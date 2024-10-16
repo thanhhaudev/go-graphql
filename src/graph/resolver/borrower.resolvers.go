@@ -6,15 +6,18 @@ package resolver
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 )
 
 // Books is the resolver for the books field.
 func (r *borrowerResolver) Books(ctx context.Context, obj *model.Borrower) ([]*model.Book, error) {
-	panic(fmt.Errorf("not implemented: Books - books"))
+	books, err := r.bookService.FindBooksByBorrowerID(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return books, nil
 }
 
 // Borrower returns generated.BorrowerResolver implementation.

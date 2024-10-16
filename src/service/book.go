@@ -22,6 +22,10 @@ func (b *BookService) FindBooksByAuthorID(ctx context.Context, authorID int) ([]
 	return b.bookRepository.FindBooksByAuthorID(ctx, authorID)
 }
 
+func (b *BookService) FindBooksByBorrowerID(ctx context.Context, borrowerID int) ([]*model.Book, error) {
+	return b.bookRepository.FindBooksByBorrowerID(ctx, borrowerID)
+}
+
 func NewBookService(bookRepository repository.BookRepository) *BookService {
 	return &BookService{bookRepository: bookRepository}
 }
