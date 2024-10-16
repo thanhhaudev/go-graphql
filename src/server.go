@@ -9,8 +9,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/joho/godotenv"
 	"github.com/thanhhaudev/go-graphql/src/config"
+	"github.com/thanhhaudev/go-graphql/src/datastore/postgres"
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/resolver"
+	"github.com/thanhhaudev/go-graphql/src/service"
 )
 
 const defaultPort = "8080"
@@ -34,9 +36,14 @@ func main() {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
 
+	authorRepo := postgres.NewAuthorRepository(db.DB())
+	authorService := service.NewAuthorService(authorRepo)
+
 	defer db.Close() // Close database connection when main function exits
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver.NewResolver()}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+		Resolvers: resolver.NewResolver(authorService),
+	}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

@@ -5,6 +5,7 @@ input AuthorInput {
 type Author {
     id: ID!
     name: String!
+    books: [Book!]!
     createdAt: Time!
     updatedAt: Time!
 }

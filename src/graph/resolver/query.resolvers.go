@@ -7,6 +7,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
@@ -24,7 +25,12 @@ func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
 
 // Authors is the resolver for the authors field.
 func (r *queryResolver) Authors(ctx context.Context) ([]*model.Author, error) {
-	panic(fmt.Errorf("not implemented: Authors - authors"))
+	res, err := r.authorService.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // Borrowers is the resolver for the borrowers field.
@@ -39,7 +45,17 @@ func (r *queryResolver) Book(ctx context.Context, id string) (*model.Book, error
 
 // Author is the resolver for the author field.
 func (r *queryResolver) Author(ctx context.Context, id string) (*model.Author, error) {
-	panic(fmt.Errorf("not implemented: Author - author"))
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := r.authorService.FindByID(ctx, intID)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // Borrower is the resolver for the borrower field.
