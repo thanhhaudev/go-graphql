@@ -47,12 +47,12 @@ func (b *bookRepository) FindByID(ctx context.Context, id int) (*model.Book, err
 	return &book, nil
 }
 
-func (b *bookRepository) Create(ctx context.Context, input *model.BookInput) error {
+func (b *bookRepository) Create(ctx context.Context, input *model.CreateBookInput) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (b *bookRepository) Update(ctx context.Context, input *model.BookInput) error {
+func (b *bookRepository) Update(ctx context.Context, input *model.UpdateBookInput) error {
 	//TODO implement me
 	panic("implement me")
 }

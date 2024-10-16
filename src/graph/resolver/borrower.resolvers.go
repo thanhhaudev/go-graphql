@@ -6,6 +6,7 @@ package resolver
 
 import (
 	"context"
+
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 )

@@ -1,5 +1,6 @@
 type Mutation {
-    createBook(input: BookInput!): Book!
+    createBook(input: CreateBookInput!): Book!
+    updateBook(id: ID!, input: UpdateBookInput!): Book!
     createAuthor(input: AuthorInput!): Author!
     createBorrower(name: String!): Borrower!
     borrowBook(borrowerId: ID!, bookId: ID!): Borrower!

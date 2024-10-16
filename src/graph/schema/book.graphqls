@@ -1,8 +1,19 @@
 scalar Time
 
-input BookInput {
+input CreateBookInput {
     title: String!
     authorIds: [ID!]!
+    publishAt: Time!
+    quantity: Int!
+    rating: Float
+}
+
+input UpdateBookInput {
+    title: String
+    authorIds: [ID!]
+    publishAt: Time
+    quantity: Int
+    rating: Float
 }
 
 type Book {
@@ -10,6 +21,8 @@ type Book {
     title: String!
     authors: [Author!]!
     publishAt: Time!
+    quantity: Int!
+    rating: Float!
     createdAt: Time!
     updatedAt: Time!
 }

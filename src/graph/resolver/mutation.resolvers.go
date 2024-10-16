@@ -13,8 +13,13 @@ import (
 )
 
 // CreateBook is the resolver for the createBook field.
-func (r *mutationResolver) CreateBook(ctx context.Context, input model.BookInput) (*model.Book, error) {
+func (r *mutationResolver) CreateBook(ctx context.Context, input model.CreateBookInput) (*model.Book, error) {
 	panic(fmt.Errorf("not implemented: CreateBook - createBook"))
+}
+
+// UpdateBook is the resolver for the updateBook field.
+func (r *mutationResolver) UpdateBook(ctx context.Context, id string, input model.UpdateBookInput) (*model.Book, error) {
+	panic(fmt.Errorf("not implemented: UpdateBook - updateBook"))
 }
 
 // CreateAuthor is the resolver for the createAuthor field.
