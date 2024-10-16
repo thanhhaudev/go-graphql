@@ -21,6 +21,10 @@ func (a *AuthorService) FindByID(ctx context.Context, id int) (*model.Author, er
 	return a.authorRepository.FindByID(ctx, id)
 }
 
+func (a *AuthorService) FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error) {
+	return a.authorRepository.FindAuthorsByBookID(ctx, bookID)
+}
+
 func NewAuthorService(authorRepository repository.AuthorRepository) *AuthorService {
 	return &AuthorService{authorRepository: authorRepository}
 }

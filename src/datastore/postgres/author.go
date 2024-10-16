@@ -30,6 +30,15 @@ func (a *authorRepository) FindByID(ctx context.Context, id int) (*model.Author,
 	return &author, nil
 }
 
+func (a *authorRepository) FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error) {
+	var book model.Book
+	if err := a.db.WithContext(ctx).Preload("Authors").First(&book, bookID).Error; err != nil {
+		return nil, err
+	}
+
+	return book.Authors, nil
+}
+
 func (a *authorRepository) Create(ctx context.Context, input *model.AuthorInput) error {
 	//TODO implement me
 	panic("implement me")

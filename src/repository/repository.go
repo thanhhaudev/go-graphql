@@ -17,6 +17,7 @@ type BookRepository interface {
 type AuthorRepository interface {
 	FindAll(ctx context.Context) ([]*model.Author, error)
 	FindByID(ctx context.Context, id int) (*model.Author, error)
+	FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error)
 	Create(ctx context.Context, input *model.AuthorInput) error
 	Update(ctx context.Context, input *model.AuthorInput) error
 	Delete(ctx context.Context, id int) error
