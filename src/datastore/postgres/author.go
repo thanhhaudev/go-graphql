@@ -30,6 +30,15 @@ func (a *authorRepository) FindByID(ctx context.Context, id int) (*model.Author,
 	return &author, nil
 }
 
+func (a *authorRepository) FindByIDs(ctx context.Context, ids []int) ([]*model.Author, error) {
+	var authors []*model.Author
+	if err := a.db.WithContext(ctx).Where("id IN (?)", ids).Find(&authors).Error; err != nil {
+		return nil, err
+	}
+
+	return authors, nil
+}
+
 func (a *authorRepository) FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error) {
 	var book model.Book
 	if err := a.db.WithContext(ctx).Preload("Authors").First(&book, bookID).Error; err != nil {
