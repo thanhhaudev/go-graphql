@@ -10,14 +10,15 @@ type BookRepository interface {
 	FindByID(ctx context.Context, id int) (*model.Book, error)
 	FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error)
 	FindBooksByBorrowerID(ctx context.Context, borrowerID int) ([]*model.Book, error)
-	Create(ctx context.Context, input *model.CreateBookInput) error
-	Update(ctx context.Context, input *model.UpdateBookInput) error
+	Create(ctx context.Context, model *model.Book) error
+	Update(ctx context.Context, model *model.Book) error
 	Delete(ctx context.Context, id int) error
 }
 
 type AuthorRepository interface {
 	FindAll(ctx context.Context) ([]*model.Author, error)
 	FindByID(ctx context.Context, id int) (*model.Author, error)
+	FindByIDs(ctx context.Context, ids []int) ([]*model.Author, error)
 	FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error)
 	Create(ctx context.Context, input *model.AuthorInput) error
 	Update(ctx context.Context, input *model.AuthorInput) error

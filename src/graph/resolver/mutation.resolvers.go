@@ -14,7 +14,7 @@ import (
 
 // CreateBook is the resolver for the createBook field.
 func (r *mutationResolver) CreateBook(ctx context.Context, input model.CreateBookInput) (*model.Book, error) {
-	panic(fmt.Errorf("not implemented: CreateBook - createBook"))
+	return r.bookService.Create(ctx, &input)
 }
 
 // UpdateBook is the resolver for the updateBook field.

@@ -41,7 +41,7 @@ func main() {
 	borrowerRepo := postgres.NewBorrowerRepository(db.DB())
 
 	authorService := service.NewAuthorService(authorRepo)
-	bookService := service.NewBookService(bookRepo)
+	bookService := service.NewBookService(bookRepo, authorRepo)
 	borrowerService := service.NewBorrowerService(borrowerRepo)
 
 	defer db.Close() // Close database connection when main function exits
