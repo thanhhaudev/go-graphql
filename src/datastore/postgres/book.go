@@ -56,8 +56,23 @@ func (b *bookRepository) Create(ctx context.Context, model *model.Book) error {
 }
 
 func (b *bookRepository) Update(ctx context.Context, model *model.Book) error {
-	//TODO implement me
-	panic("implement me")
+	// Start a transaction
+	tx := b.db.WithContext(ctx).Begin()
+
+	// Update the book details
+	if err := tx.Omit("Authors").Updates(model).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Update the Authors association
+	if err := tx.Model(model).Association("Authors").Replace(model.Authors); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Commit the transaction
+	return tx.Commit().Error
 }
 
 func (b *bookRepository) Delete(ctx context.Context, id int) error {

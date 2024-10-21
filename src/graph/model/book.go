@@ -48,11 +48,49 @@ func (c *CreateBookInput) ToBook() *Book {
 }
 
 type UpdateBookInput struct {
-	Title     *string  `json:"title"`
-	AuthorIds []string `json:"authorIds"`
+	Title     *string `json:"title"`
+	AuthorIds []int   `json:"authorIds"`
 	PublishAt *time.Time
 	Quantity  *int
 	Rating    *float64
+}
+
+func (u *UpdateBookInput) Validate() error {
+	if u.Title != nil && *u.Title == "" {
+		return fmt.Errorf("title can't be blank")
+	}
+
+	if u.Quantity != nil && *u.Quantity < 0 {
+		return fmt.Errorf("quantity can't be negative")
+	}
+
+	if u.Rating != nil && (*u.Rating < 0 || *u.Rating > 5) {
+		return fmt.Errorf("rating must be between 0 and 5")
+	}
+
+	if u.PublishAt != nil && u.PublishAt.IsZero() {
+		return fmt.Errorf("publishAt can't be blank")
+	}
+
+	return nil
+}
+
+func (u *UpdateBookInput) Patch(book *Book) {
+	if u.Title != nil {
+		book.Title = *u.Title
+	}
+
+	if u.PublishAt != nil {
+		book.PublishAt = *u.PublishAt
+	}
+
+	if u.Quantity != nil {
+		book.Quantity = *u.Quantity
+	}
+
+	if u.Rating != nil {
+		book.Rating = *u.Rating
+	}
 }
 
 type Book struct {
