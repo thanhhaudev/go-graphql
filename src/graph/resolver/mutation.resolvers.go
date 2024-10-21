@@ -7,6 +7,7 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
@@ -19,7 +20,12 @@ func (r *mutationResolver) CreateBook(ctx context.Context, input model.CreateBoo
 
 // UpdateBook is the resolver for the updateBook field.
 func (r *mutationResolver) UpdateBook(ctx context.Context, id string, input model.UpdateBookInput) (*model.Book, error) {
-	panic(fmt.Errorf("not implemented: UpdateBook - updateBook"))
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.bookService.Update(ctx, intID, &input)
 }
 
 // CreateAuthor is the resolver for the createAuthor field.

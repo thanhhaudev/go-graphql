@@ -37,6 +37,38 @@ func (b *BookService) Create(ctx context.Context, input *model.CreateBookInput) 
 	return book, nil
 }
 
+func (b *BookService) Update(ctx context.Context, id int, input *model.UpdateBookInput) (*model.Book, error) {
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+
+	book, err := b.bookRepository.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if input.AuthorIds != nil && len(input.AuthorIds) > 0 {
+		authors, err := b.authorRepository.FindByIDs(ctx, input.AuthorIds)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(authors) != len(input.AuthorIds) {
+			return nil, fmt.Errorf("some authors are not found")
+		}
+
+		book.SetAuthors(authors)
+	}
+
+	input.Patch(book)
+
+	if err := b.bookRepository.Update(ctx, book); err != nil {
+		return nil, err
+	}
+
+	return book, nil
+}
+
 func (b *BookService) FindAll(ctx context.Context) ([]*model.Book, error) {
 	return b.bookRepository.FindAll(ctx)
 }
