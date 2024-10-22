@@ -8,7 +8,7 @@ import (
 type BorrowersBooks struct {
 	BorrowerID int       `gorm:"primaryKey" json:"borrowerId"`
 	BookID     int       `gorm:"primaryKey" json:"bookId"`
-	BorrowedAt time.Time `json:"borrowedAt"`
+	BorrowedAt time.Time `gorm:"primaryKey;uniqueIndex:idx_borrower_book_borrowed" json:"borrowedAt"`
 	ReturnedAt time.Time `json:"returnedAt"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
