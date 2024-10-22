@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
@@ -15,7 +14,7 @@ import (
 
 // BirthDate is the resolver for the birthDate field.
 func (r *borrowerResolver) BirthDate(ctx context.Context, obj *model.Borrower) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented: BirthDate - birthDate"))
+	return (*time.Time)(&obj.BirthDate), nil
 }
 
 // Books is the resolver for the books field.
