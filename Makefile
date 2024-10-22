@@ -16,6 +16,10 @@ logs:
 generate:
 	go generate ./src/...
 migrate:
-	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/migrate/main.go
+	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/migrate/main.go --action=migrate
+migrate/rollback:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/migrate/main.go --action=rollback
+migrate/refresh:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/migrate/main.go --action=refresh
 seed:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/seed/main.go

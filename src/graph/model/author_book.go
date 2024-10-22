@@ -1,16 +1,10 @@
 package model
 
-import (
-	"gorm.io/gorm"
-	"time"
-)
-
+// AuthorBook represents the many-to-many relationship between authors and books.
+// this is the join table, so no need to define any fields other than the foreign keys.
 type AuthorBook struct {
-	AuthorID  int `gorm:"primaryKey"`
-	BookID    int `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	AuthorID int `gorm:"primaryKey"`
+	BookID   int `gorm:"primaryKey"`
 }
 
 func (AuthorBook) TableName() string {

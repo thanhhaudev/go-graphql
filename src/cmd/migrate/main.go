@@ -1,13 +1,19 @@
 package main
 
 import (
+	"flag"
+	"log"
+
 	"github.com/joho/godotenv"
 	"github.com/thanhhaudev/go-graphql/src/config"
 	"github.com/thanhhaudev/go-graphql/src/migration"
-	"log"
 )
 
 func main() {
+	// Define command-line flags
+	action := flag.String("action", "migrate", "Action to perform: migrate or rollback")
+	flag.Parse()
+
 	// Load environment variables from .env file
 	err := godotenv.Load()
 	if err != nil {
@@ -22,9 +28,32 @@ func main() {
 	defer db.Close()
 
 	m := migration.Migrations(db.DB())
-	if err := m.Migrate(); err != nil {
-		log.Fatalf("could not run migration: %v", err)
-	} else {
-		log.Println("Migration ran successfully.")
+	switch *action {
+	case "migrate":
+		if err := m.Migrate(); err != nil {
+			log.Fatalf("could not run migration: %v", err)
+		} else {
+			log.Println("Migration ran successfully.")
+		}
+	case "rollback":
+		if err := m.RollbackLast(); err != nil {
+			log.Fatalf("could not rollback migration: %v", err)
+		} else {
+			log.Println("Rollback ran successfully.")
+		}
+	case "refresh":
+		if err := m.RollbackTo("00001_create_books_table"); err != nil {
+			log.Fatalf("could not rollback migration: %v", err)
+		} else {
+			log.Println("Rollback ran successfully.")
+
+			if err := m.Migrate(); err != nil {
+				log.Fatalf("could not run migration: %v", err)
+			} else {
+				log.Println("Migration ran successfully.")
+			}
+		}
+	default:
+		log.Fatalf("Unknown action: %s", *action)
 	}
 }
