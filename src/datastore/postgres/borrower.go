@@ -30,12 +30,24 @@ func (b borrowerRepository) FindByID(ctx context.Context, id int) (*model.Borrow
 	return &borrower, nil
 }
 
-func (b borrowerRepository) Create(ctx context.Context, input *model.BorrowerInput) error {
-	//TODO implement me
-	panic("implement me")
+func (b borrowerRepository) FindByTelNumber(ctx context.Context, telNumber string) (*model.Borrower, error) {
+	var borrower model.Borrower
+	if err := b.db.WithContext(ctx).Where("tel_number = ?", telNumber).First(&borrower).Error; err != nil {
+		return nil, err
+	}
+
+	return &borrower, nil
 }
 
-func (b borrowerRepository) Update(ctx context.Context, input *model.BorrowerInput) error {
+func (b borrowerRepository) Create(ctx context.Context, input *model.Borrower) (*model.Borrower, error) {
+	if err := b.db.WithContext(ctx).Create(input).Error; err != nil {
+		return nil, err
+	}
+
+	return input, nil
+}
+
+func (b borrowerRepository) Update(ctx context.Context, input *model.Borrower) (*model.Borrower, error) {
 	//TODO implement me
 	panic("implement me")
 }

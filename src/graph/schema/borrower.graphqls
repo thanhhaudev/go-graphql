@@ -1,7 +1,17 @@
+input CreateBorrowerInput {
+    name: String!
+    address: String!
+    telNumber: String!
+    birthDate: Time!
+}
+
 type Borrower {
-  id: ID!
-  name: String!
-  books: [Book!]!
-  createdAt: Time!
-  updatedAt: Time!
+    id: ID!
+    name: String!
+    address: String!
+    telNumber: String!
+    birthDate: Time!
+    books: [Book!]!
+    createdAt: Time!
+    updatedAt: Time!
 }

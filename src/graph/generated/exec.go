@@ -70,10 +70,13 @@ type ComplexityRoot struct {
 	}
 
 	Borrower struct {
+		Address   func(childComplexity int) int
+		BirthDate func(childComplexity int) int
 		Books     func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
+		TelNumber func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 
@@ -81,7 +84,7 @@ type ComplexityRoot struct {
 		BorrowBook     func(childComplexity int, borrowerID string, bookID string) int
 		CreateAuthor   func(childComplexity int, input model.CreateAuthorInput) int
 		CreateBook     func(childComplexity int, input model.CreateBookInput) int
-		CreateBorrower func(childComplexity int, name string) int
+		CreateBorrower func(childComplexity int, input model.CreateBorrowerInput) int
 		ReturnBook     func(childComplexity int, borrowerID string, bookID string) int
 		UpdateBook     func(childComplexity int, id string, input model.UpdateBookInput) int
 	}
@@ -103,13 +106,14 @@ type BookResolver interface {
 	Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error)
 }
 type BorrowerResolver interface {
+	BirthDate(ctx context.Context, obj *model.Borrower) (*time.Time, error)
 	Books(ctx context.Context, obj *model.Borrower) ([]*model.Book, error)
 }
 type MutationResolver interface {
 	CreateBook(ctx context.Context, input model.CreateBookInput) (*model.Book, error)
 	UpdateBook(ctx context.Context, id string, input model.UpdateBookInput) (*model.Book, error)
 	CreateAuthor(ctx context.Context, input model.CreateAuthorInput) (*model.Author, error)
-	CreateBorrower(ctx context.Context, name string) (*model.Borrower, error)
+	CreateBorrower(ctx context.Context, input model.CreateBorrowerInput) (*model.Borrower, error)
 	BorrowBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
 	ReturnBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
 }
@@ -232,6 +236,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Book.UpdatedAt(childComplexity), true
 
+	case "Borrower.address":
+		if e.complexity.Borrower.Address == nil {
+			break
+		}
+
+		return e.complexity.Borrower.Address(childComplexity), true
+
+	case "Borrower.birthDate":
+		if e.complexity.Borrower.BirthDate == nil {
+			break
+		}
+
+		return e.complexity.Borrower.BirthDate(childComplexity), true
+
 	case "Borrower.books":
 		if e.complexity.Borrower.Books == nil {
 			break
@@ -259,6 +277,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Borrower.Name(childComplexity), true
+
+	case "Borrower.telNumber":
+		if e.complexity.Borrower.TelNumber == nil {
+			break
+		}
+
+		return e.complexity.Borrower.TelNumber(childComplexity), true
 
 	case "Borrower.updatedAt":
 		if e.complexity.Borrower.UpdatedAt == nil {
@@ -313,7 +338,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateBorrower(childComplexity, args["name"].(string)), true
+		return e.complexity.Mutation.CreateBorrower(childComplexity, args["input"].(model.CreateBorrowerInput)), true
 
 	case "Mutation.returnBook":
 		if e.complexity.Mutation.ReturnBook == nil {
@@ -406,6 +431,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateAuthorInput,
 		ec.unmarshalInputCreateBookInput,
+		ec.unmarshalInputCreateBorrowerInput,
 		ec.unmarshalInputUpdateBookInput,
 	)
 	first := true
@@ -544,19 +570,28 @@ type Book {
     updatedAt: Time!
 }
 `, BuiltIn: false},
-	{Name: "../schema/borrower.graphqls", Input: `type Borrower {
-  id: ID!
-  name: String!
-  books: [Book!]!
-  createdAt: Time!
-  updatedAt: Time!
+	{Name: "../schema/borrower.graphqls", Input: `input CreateBorrowerInput {
+    name: String!
+    address: String!
+    telNumber: String!
+    birthDate: Time!
 }
-`, BuiltIn: false},
+
+type Borrower {
+    id: ID!
+    name: String!
+    address: String!
+    telNumber: String!
+    birthDate: Time!
+    books: [Book!]!
+    createdAt: Time!
+    updatedAt: Time!
+}`, BuiltIn: false},
 	{Name: "../schema/mutation.graphqls", Input: `type Mutation {
     createBook(input: CreateBookInput!): Book!
     updateBook(id: ID!, input: UpdateBookInput!): Book!
     createAuthor(input: CreateAuthorInput!): Author!
-    createBorrower(name: String!): Borrower!
+    createBorrower(input: CreateBorrowerInput!): Borrower!
     borrowBook(borrowerId: ID!, bookId: ID!): Borrower!
     returnBook(borrowerId: ID!, bookId: ID!): Borrower!
 }
@@ -667,23 +702,23 @@ func (ec *executionContext) field_Mutation_createBook_argsInput(
 func (ec *executionContext) field_Mutation_createBorrower_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	arg0, err := ec.field_Mutation_createBorrower_argsName(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_createBorrower_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["name"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Mutation_createBorrower_argsName(
+func (ec *executionContext) field_Mutation_createBorrower_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-	if tmp, ok := rawArgs["name"]; ok {
-		return ec.unmarshalNString2string(ctx, tmp)
+) (model.CreateBorrowerInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNCreateBorrowerInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐCreateBorrowerInput(ctx, tmp)
 	}
 
-	var zeroVal string
+	var zeroVal model.CreateBorrowerInput
 	return zeroVal, nil
 }
 
@@ -1605,6 +1640,138 @@ func (ec *executionContext) fieldContext_Borrower_name(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Borrower_address(ctx context.Context, field graphql.CollectedField, obj *model.Borrower) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Borrower_address(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Borrower_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Borrower",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Borrower_telNumber(ctx context.Context, field graphql.CollectedField, obj *model.Borrower) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Borrower_telNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TelNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Borrower_telNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Borrower",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Borrower_birthDate(ctx context.Context, field graphql.CollectedField, obj *model.Borrower) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Borrower_birthDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Borrower().BirthDate(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalNTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Borrower_birthDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Borrower",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Borrower_books(ctx context.Context, field graphql.CollectedField, obj *model.Borrower) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Borrower_books(ctx, field)
 	if err != nil {
@@ -1982,7 +2149,7 @@ func (ec *executionContext) _Mutation_createBorrower(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateBorrower(rctx, fc.Args["name"].(string))
+		return ec.resolvers.Mutation().CreateBorrower(rctx, fc.Args["input"].(model.CreateBorrowerInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2011,6 +2178,12 @@ func (ec *executionContext) fieldContext_Mutation_createBorrower(ctx context.Con
 				return ec.fieldContext_Borrower_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Borrower_name(ctx, field)
+			case "address":
+				return ec.fieldContext_Borrower_address(ctx, field)
+			case "telNumber":
+				return ec.fieldContext_Borrower_telNumber(ctx, field)
+			case "birthDate":
+				return ec.fieldContext_Borrower_birthDate(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
 			case "createdAt":
@@ -2078,6 +2251,12 @@ func (ec *executionContext) fieldContext_Mutation_borrowBook(ctx context.Context
 				return ec.fieldContext_Borrower_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Borrower_name(ctx, field)
+			case "address":
+				return ec.fieldContext_Borrower_address(ctx, field)
+			case "telNumber":
+				return ec.fieldContext_Borrower_telNumber(ctx, field)
+			case "birthDate":
+				return ec.fieldContext_Borrower_birthDate(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
 			case "createdAt":
@@ -2145,6 +2324,12 @@ func (ec *executionContext) fieldContext_Mutation_returnBook(ctx context.Context
 				return ec.fieldContext_Borrower_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Borrower_name(ctx, field)
+			case "address":
+				return ec.fieldContext_Borrower_address(ctx, field)
+			case "telNumber":
+				return ec.fieldContext_Borrower_telNumber(ctx, field)
+			case "birthDate":
+				return ec.fieldContext_Borrower_birthDate(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
 			case "createdAt":
@@ -2330,6 +2515,12 @@ func (ec *executionContext) fieldContext_Query_borrowers(_ context.Context, fiel
 				return ec.fieldContext_Borrower_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Borrower_name(ctx, field)
+			case "address":
+				return ec.fieldContext_Borrower_address(ctx, field)
+			case "telNumber":
+				return ec.fieldContext_Borrower_telNumber(ctx, field)
+			case "birthDate":
+				return ec.fieldContext_Borrower_birthDate(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
 			case "createdAt":
@@ -2517,6 +2708,12 @@ func (ec *executionContext) fieldContext_Query_borrower(ctx context.Context, fie
 				return ec.fieldContext_Borrower_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Borrower_name(ctx, field)
+			case "address":
+				return ec.fieldContext_Borrower_address(ctx, field)
+			case "telNumber":
+				return ec.fieldContext_Borrower_telNumber(ctx, field)
+			case "birthDate":
+				return ec.fieldContext_Borrower_birthDate(ctx, field)
 			case "books":
 				return ec.fieldContext_Borrower_books(ctx, field)
 			case "createdAt":
@@ -4525,6 +4722,54 @@ func (ec *executionContext) unmarshalInputCreateBookInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateBorrowerInput(ctx context.Context, obj interface{}) (model.CreateBorrowerInput, error) {
+	var it model.CreateBorrowerInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "address", "telNumber", "birthDate"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "address":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Address = data
+		case "telNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telNumber"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TelNumber = data
+		case "birthDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BirthDate = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateBookInput(ctx context.Context, obj interface{}) (model.UpdateBookInput, error) {
 	var it model.UpdateBookInput
 	asMap := map[string]interface{}{}
@@ -4804,6 +5049,52 @@ func (ec *executionContext) _Borrower(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "address":
+			out.Values[i] = ec._Borrower_address(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "telNumber":
+			out.Values[i] = ec._Borrower_telNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "birthDate":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Borrower_birthDate(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "books":
 			field := field
 
@@ -5655,6 +5946,11 @@ func (ec *executionContext) unmarshalNCreateBookInput2githubᚗcomᚋthanhhaudev
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateBorrowerInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐCreateBorrowerInput(ctx context.Context, v interface{}) (model.CreateBorrowerInput, error) {
+	res, err := ec.unmarshalInputCreateBorrowerInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5769,6 +6065,27 @@ func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v in
 
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
 	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
