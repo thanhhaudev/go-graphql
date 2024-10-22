@@ -79,7 +79,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		BorrowBook     func(childComplexity int, borrowerID string, bookID string) int
-		CreateAuthor   func(childComplexity int, input model.AuthorInput) int
+		CreateAuthor   func(childComplexity int, input model.CreateAuthorInput) int
 		CreateBook     func(childComplexity int, input model.CreateBookInput) int
 		CreateBorrower func(childComplexity int, name string) int
 		ReturnBook     func(childComplexity int, borrowerID string, bookID string) int
@@ -108,7 +108,7 @@ type BorrowerResolver interface {
 type MutationResolver interface {
 	CreateBook(ctx context.Context, input model.CreateBookInput) (*model.Book, error)
 	UpdateBook(ctx context.Context, id string, input model.UpdateBookInput) (*model.Book, error)
-	CreateAuthor(ctx context.Context, input model.AuthorInput) (*model.Author, error)
+	CreateAuthor(ctx context.Context, input model.CreateAuthorInput) (*model.Author, error)
 	CreateBorrower(ctx context.Context, name string) (*model.Borrower, error)
 	BorrowBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
 	ReturnBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
@@ -289,7 +289,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateAuthor(childComplexity, args["input"].(model.AuthorInput)), true
+		return e.complexity.Mutation.CreateAuthor(childComplexity, args["input"].(model.CreateAuthorInput)), true
 
 	case "Mutation.createBook":
 		if e.complexity.Mutation.CreateBook == nil {
@@ -404,7 +404,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputAuthorInput,
+		ec.unmarshalInputCreateAuthorInput,
 		ec.unmarshalInputCreateBookInput,
 		ec.unmarshalInputUpdateBookInput,
 	)
@@ -504,7 +504,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/author.graphqls", Input: `input AuthorInput {
+	{Name: "../schema/author.graphqls", Input: `input CreateAuthorInput {
     name: String!
 }
 
@@ -555,7 +555,7 @@ type Book {
 	{Name: "../schema/mutation.graphqls", Input: `type Mutation {
     createBook(input: CreateBookInput!): Book!
     updateBook(id: ID!, input: UpdateBookInput!): Book!
-    createAuthor(input: AuthorInput!): Author!
+    createAuthor(input: CreateAuthorInput!): Author!
     createBorrower(name: String!): Borrower!
     borrowBook(borrowerId: ID!, bookId: ID!): Borrower!
     returnBook(borrowerId: ID!, bookId: ID!): Borrower!
@@ -631,13 +631,13 @@ func (ec *executionContext) field_Mutation_createAuthor_args(ctx context.Context
 func (ec *executionContext) field_Mutation_createAuthor_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (model.AuthorInput, error) {
+) (model.CreateAuthorInput, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 	if tmp, ok := rawArgs["input"]; ok {
-		return ec.unmarshalNAuthorInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐAuthorInput(ctx, tmp)
+		return ec.unmarshalNCreateAuthorInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐCreateAuthorInput(ctx, tmp)
 	}
 
-	var zeroVal model.AuthorInput
+	var zeroVal model.CreateAuthorInput
 	return zeroVal, nil
 }
 
@@ -1915,7 +1915,7 @@ func (ec *executionContext) _Mutation_createAuthor(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateAuthor(rctx, fc.Args["input"].(model.AuthorInput))
+		return ec.resolvers.Mutation().CreateAuthor(rctx, fc.Args["input"].(model.CreateAuthorInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4443,8 +4443,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputAuthorInput(ctx context.Context, obj interface{}) (model.AuthorInput, error) {
-	var it model.AuthorInput
+func (ec *executionContext) unmarshalInputCreateAuthorInput(ctx context.Context, obj interface{}) (model.CreateAuthorInput, error) {
+	var it model.CreateAuthorInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -5514,11 +5514,6 @@ func (ec *executionContext) marshalNAuthor2ᚖgithubᚗcomᚋthanhhaudevᚋgoᚑ
 	return ec._Author(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNAuthorInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐAuthorInput(ctx context.Context, v interface{}) (model.AuthorInput, error) {
-	res, err := ec.unmarshalInputAuthorInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalNBook2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐBook(ctx context.Context, sel ast.SelectionSet, v model.Book) graphql.Marshaler {
 	return ec._Book(ctx, sel, &v)
 }
@@ -5648,6 +5643,11 @@ func (ec *executionContext) marshalNBorrower2ᚖgithubᚗcomᚋthanhhaudevᚋgo�
 		return graphql.Null
 	}
 	return ec._Borrower(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCreateAuthorInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐCreateAuthorInput(ctx context.Context, v interface{}) (model.CreateAuthorInput, error) {
+	res, err := ec.unmarshalInputCreateAuthorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNCreateBookInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐCreateBookInput(ctx context.Context, v interface{}) (model.CreateBookInput, error) {

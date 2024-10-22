@@ -48,12 +48,15 @@ func (a *authorRepository) FindAuthorsByBookID(ctx context.Context, bookID int) 
 	return book.Authors, nil
 }
 
-func (a *authorRepository) Create(ctx context.Context, input *model.AuthorInput) error {
-	//TODO implement me
-	panic("implement me")
+func (a *authorRepository) Create(ctx context.Context, model *model.Author) (*model.Author, error) {
+	if err := a.db.WithContext(ctx).Create(model).Error; err != nil {
+		return nil, err
+	}
+
+	return model, nil
 }
 
-func (a *authorRepository) Update(ctx context.Context, input *model.AuthorInput) error {
+func (a *authorRepository) Update(ctx context.Context, model *model.Author) (*model.Author, error) {
 	//TODO implement me
 	panic("implement me")
 }

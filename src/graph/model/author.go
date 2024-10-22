@@ -1,8 +1,10 @@
 package model
 
 import (
-	"gorm.io/gorm"
+	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Author struct {
@@ -18,6 +20,25 @@ func (a Author) TableName() string {
 	return "authors"
 }
 
-type AuthorInput struct {
-	Name string `json:"name"`
+type CreateAuthorInput struct {
+	Name  string `json:"name"`
+	Books []int  `json:"books"`
+}
+
+func (c *CreateAuthorInput) Validate() error {
+	if c.Name == "" {
+		return fmt.Errorf("name can't be blank")
+	}
+
+	return nil
+}
+
+func (c *CreateAuthorInput) ToAuthor() *Author {
+	return &Author{
+		Name: c.Name,
+	}
+}
+
+type UpdateAuthorInput struct {
+	Name *string `json:"name"`
 }

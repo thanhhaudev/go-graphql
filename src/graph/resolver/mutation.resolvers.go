@@ -29,8 +29,8 @@ func (r *mutationResolver) UpdateBook(ctx context.Context, id string, input mode
 }
 
 // CreateAuthor is the resolver for the createAuthor field.
-func (r *mutationResolver) CreateAuthor(ctx context.Context, input model.AuthorInput) (*model.Author, error) {
-	panic(fmt.Errorf("not implemented: CreateAuthor - createAuthor"))
+func (r *mutationResolver) CreateAuthor(ctx context.Context, input model.CreateAuthorInput) (*model.Author, error) {
+	return r.authorService.Create(ctx, &input)
 }
 
 // CreateBorrower is the resolver for the createBorrower field.
