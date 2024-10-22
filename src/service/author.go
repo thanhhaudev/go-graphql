@@ -11,6 +11,14 @@ type AuthorService struct {
 	authorRepository repository.AuthorRepository
 }
 
+func (a *AuthorService) Create(ctx context.Context, input *model.CreateAuthorInput) (*model.Author, error) {
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+
+	return a.authorRepository.Create(ctx, input.ToAuthor())
+}
+
 // FindAll returns all authors
 func (a *AuthorService) FindAll(ctx context.Context) ([]*model.Author, error) {
 	return a.authorRepository.FindAll(ctx)

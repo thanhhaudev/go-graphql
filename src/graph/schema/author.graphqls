@@ -1,4 +1,4 @@
-input AuthorInput {
+input CreateAuthorInput {
     name: String!
 }
 
