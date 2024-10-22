@@ -34,8 +34,8 @@ func (r *mutationResolver) CreateAuthor(ctx context.Context, input model.CreateA
 }
 
 // CreateBorrower is the resolver for the createBorrower field.
-func (r *mutationResolver) CreateBorrower(ctx context.Context, name string) (*model.Borrower, error) {
-	panic(fmt.Errorf("not implemented: CreateBorrower - createBorrower"))
+func (r *mutationResolver) CreateBorrower(ctx context.Context, input model.CreateBorrowerInput) (*model.Borrower, error) {
+	return r.borrowerService.Create(ctx, &input)
 }
 
 // BorrowBook is the resolver for the borrowBook field.

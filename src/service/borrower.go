@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 	"github.com/thanhhaudev/go-graphql/src/repository"
@@ -9,6 +10,18 @@ import (
 
 type BorrowerService struct {
 	borrowerRepository repository.BorrowerRepository
+}
+
+func (b *BorrowerService) Create(ctx context.Context, input *model.CreateBorrowerInput) (*model.Borrower, error) {
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+
+	if e, _ := b.borrowerRepository.FindByTelNumber(ctx, input.TelNumber); e != nil {
+		return nil, fmt.Errorf("borrower with telNumber %q already exists", input.TelNumber)
+	}
+
+	return b.borrowerRepository.Create(ctx, input.ToBorrower())
 }
 
 func (b *BorrowerService) FindAll(ctx context.Context) ([]*model.Borrower, error) {
