@@ -42,9 +42,13 @@ func main() {
 			log.Println("Rollback ran successfully.")
 		}
 	case "refresh":
-		if err := m.RollbackTo("00001_create_books_table"); err != nil {
+		if err := m.RollbackTo("00001_create_authors_table"); err != nil {
 			log.Fatalf("could not rollback migration: %v", err)
 		} else {
+			if err := m.RollbackLast(); err != nil { // Rollback the last migration, because this library doesn't support rollback all migrations
+				log.Fatalf("could not rollback migration: %v", err)
+			}
+
 			log.Println("Rollback ran successfully.")
 
 			if err := m.Migrate(); err != nil {

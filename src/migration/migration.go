@@ -9,21 +9,21 @@ import (
 func Migrations(db *gorm.DB) *gormigrate.Gormigrate {
 	return gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		{
-			ID: "00001_create_books_table",
-			Migrate: func(tx *gorm.DB) error {
-				return tx.AutoMigrate(&model.Book{})
-			},
-			Rollback: func(tx *gorm.DB) error {
-				return tx.Migrator().DropTable("books")
-			},
-		},
-		{
-			ID: "00002_create_authors_table",
+			ID: "00001_create_authors_table",
 			Migrate: func(tx *gorm.DB) error {
 				return tx.AutoMigrate(&model.Author{})
 			},
 			Rollback: func(tx *gorm.DB) error {
 				return tx.Migrator().DropTable("authors")
+			},
+		},
+		{
+			ID: "00002_create_books_table",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(&model.Book{})
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.Migrator().DropTable("books")
 			},
 		},
 		{
