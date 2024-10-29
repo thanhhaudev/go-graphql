@@ -915,7 +915,7 @@ var (
 			Address:   "123 Elm Street",
 			TelNumber: "555-1234",
 			BirthDate: datatypes.Date(time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[0], Books[1]}, // Harry Potter and A Game of Thrones
+			Borrowed:  setBorrowerIDs(Books[0], Books[1]), // Harry Potter and A Game of Thrones
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -924,7 +924,7 @@ var (
 			Address:   "456 Oak Avenue",
 			TelNumber: "555-5678",
 			BirthDate: datatypes.Date(time.Date(1990, 2, 2, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[2]}, // The Hobbit
+			Borrowed:  setBorrowerIDs(Books[2]), // The Hobbit
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -933,7 +933,7 @@ var (
 			Address:   "789 Pine Road",
 			TelNumber: "555-8765",
 			BirthDate: datatypes.Date(time.Date(1975, 3, 3, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[3], Books[4]}, // The Shining and Murder on the Orient Express
+			Borrowed:  setBorrowerIDs(Books[3], Books[4]), // The Shining and Murder on the Orient Express
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -942,7 +942,7 @@ var (
 			Address:   "101 Maple Lane",
 			TelNumber: "555-4321",
 			BirthDate: datatypes.Date(time.Date(1985, 4, 4, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[5], Books[6]}, // Adventures of Huckleberry Finn and The Old Man and the Sea
+			Borrowed:  setBorrowerIDs(Books[5], Books[6]), // Adventures of Huckleberry Finn and The Old Man and the Sea
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -951,7 +951,7 @@ var (
 			Address:   "202 Birch Boulevard",
 			TelNumber: "555-6789",
 			BirthDate: datatypes.Date(time.Date(1995, 5, 5, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[7]}, // The Great Gatsby
+			Borrowed:  setBorrowerIDs(Books[7]), // The Great Gatsby
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -960,7 +960,7 @@ var (
 			Address:   "303 Cedar Street",
 			TelNumber: "555-9876",
 			BirthDate: datatypes.Date(time.Date(1988, 6, 6, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[8]}, // A Tale of Two Cities
+			Borrowed:  setBorrowerIDs(Books[8]), // A Tale of Two Cities
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -969,7 +969,7 @@ var (
 			Address:   "404 Walnut Avenue",
 			TelNumber: "555-5432",
 			BirthDate: datatypes.Date(time.Date(1978, 7, 7, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[9], Books[10]}, // Pride and Prejudice and War and Peace
+			Borrowed:  setBorrowerIDs(Books[9], Books[10]), // Pride and Prejudice and War and Peace
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -978,7 +978,7 @@ var (
 			Address:   "505 Chestnut Road",
 			TelNumber: "555-6543",
 			BirthDate: datatypes.Date(time.Date(1982, 8, 8, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[11]}, // One Hundred Years of Solitude
+			Borrowed:  setBorrowerIDs(Books[11]), // One Hundred Years of Solitude
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -987,7 +987,7 @@ var (
 			Address:   "606 Spruce Lane",
 			TelNumber: "555-3210",
 			BirthDate: datatypes.Date(time.Date(1992, 9, 9, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[12]}, // Norwegian Wood
+			Borrowed:  setBorrowerIDs(Books[12]), // Norwegian Wood
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -996,7 +996,7 @@ var (
 			Address:   "707 Redwood Boulevard",
 			TelNumber: "555-2109",
 			BirthDate: datatypes.Date(time.Date(1984, 10, 10, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[13]}, // Beloved
+			Borrowed:  setBorrowerIDs(Books[13]), // Beloved
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1005,7 +1005,7 @@ var (
 			Address:   "808 Cypress Street",
 			TelNumber: "555-1098",
 			BirthDate: datatypes.Date(time.Date(1976, 11, 11, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[14]}, // The House of the Spirits
+			Borrowed:  setBorrowerIDs(Books[14]), // The House of the Spirits
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1014,7 +1014,7 @@ var (
 			Address:   "909 Fir Avenue",
 			TelNumber: "555-0987",
 			BirthDate: datatypes.Date(time.Date(1991, 12, 12, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[15]}, // 1984
+			Borrowed:  setBorrowerIDs(Books[15]), // 1984
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1023,7 +1023,7 @@ var (
 			Address:   "123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh",
 			TelNumber: "0901234567",
 			BirthDate: datatypes.Date(time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[0], Books[1]},
+			Borrowed:  setBorrowerIDs(Books[0], Books[1]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1032,7 +1032,7 @@ var (
 			Address:   "456 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
 			TelNumber: "0902345678",
 			BirthDate: datatypes.Date(time.Date(1985, 2, 2, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[2]},
+			Borrowed:  setBorrowerIDs(Books[2]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1041,7 +1041,7 @@ var (
 			Address:   "789 Đường Trần Hưng Đạo, Quận 5, TP. Hồ Chí Minh",
 			TelNumber: "0903456789",
 			BirthDate: datatypes.Date(time.Date(1980, 3, 3, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[3], Books[4]},
+			Borrowed:  setBorrowerIDs(Books[3], Books[4]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1050,7 +1050,7 @@ var (
 			Address:   "123 Đường Trần Phú, Quận 5, TP. Hồ Chí Minh",
 			TelNumber: "0904567890",
 			BirthDate: datatypes.Date(time.Date(1993, 4, 4, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[5], Books[6]},
+			Borrowed:  setBorrowerIDs(Books[5], Books[6]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1059,7 +1059,7 @@ var (
 			Address:   "456 Đường Lý Thường Kiệt, Quận 10, TP. Hồ Chí Minh",
 			TelNumber: "0905678901",
 			BirthDate: datatypes.Date(time.Date(1987, 5, 5, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[7]},
+			Borrowed:  setBorrowerIDs(Books[7]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1068,7 +1068,7 @@ var (
 			Address:   "789 Đường Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh",
 			TelNumber: "0906789012",
 			BirthDate: datatypes.Date(time.Date(1995, 6, 6, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[8]},
+			Borrowed:  setBorrowerIDs(Books[8]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1077,7 +1077,7 @@ var (
 			Address:   "101 Đường Phạm Ngũ Lão, Quận 3, TP. Hồ Chí Minh",
 			TelNumber: "0907890123",
 			BirthDate: datatypes.Date(time.Date(1982, 7, 7, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[9], Books[10]},
+			Borrowed:  setBorrowerIDs(Books[9], Books[10]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1086,7 +1086,7 @@ var (
 			Address:   "202 Đường Nguyễn Văn Cừ, Quận 4, TP. Hồ Chí Minh",
 			TelNumber: "0908901234",
 			BirthDate: datatypes.Date(time.Date(1990, 8, 8, 0, 0, 0, 0, time.UTC)),
-			Books:     []*model.Book{Books[11]},
+			Borrowed:  setBorrowerIDs(Books[11]),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -1132,4 +1132,20 @@ func SeedBorrowers(db *gorm.DB, borrowers []*model.Borrower) {
 	} else {
 		log.Println("Borrowers table already contains data.")
 	}
+}
+
+func setBorrowerIDs(books ...*model.Book) []*model.BorrowerBook {
+	var r []*model.BorrowerBook
+	n := time.Now()
+
+	for _, book := range books {
+		r = append(r, &model.BorrowerBook{
+			Book:       book,
+			BorrowedAt: n,
+			DueDate:    datatypes.Date(time.Now().AddDate(0, 1, 0)), // Due in one month
+			Status:     "borrowed",
+		})
+	}
+
+	return r
 }

@@ -94,13 +94,14 @@ func (u *UpdateBookInput) Patch(book *Book) {
 }
 
 type Book struct {
-	ID          int       `gorm:"primaryKey" json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Quantity    int       `json:"quantity"`
-	Rating      float64   `json:"rating"`
-	Authors     []*Author `gorm:"many2many:authors_books" json:"authors"`
-	PublishAt   time.Time `json:"publishAt"`
+	ID          int             `gorm:"primaryKey" json:"id"`
+	Title       string          `json:"title"`
+	Description string          `json:"description"`
+	Quantity    int             `json:"quantity"`
+	Rating      float64         `json:"rating"`
+	Authors     []*Author       `gorm:"many2many:authors_books" json:"authors"`
+	Borrowed    []*BorrowerBook `json:"borrowed"`
+	PublishAt   time.Time       `json:"publishAt"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`

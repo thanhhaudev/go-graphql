@@ -14,7 +14,7 @@ import (
 
 // Books is the resolver for the books field.
 func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
-	books, err := r.bookService.FindAll(ctx)
+	books, err := r.bookService.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (r *queryResolver) Books(ctx context.Context) ([]*model.Book, error) {
 
 // Authors is the resolver for the authors field.
 func (r *queryResolver) Authors(ctx context.Context) ([]*model.Author, error) {
-	res, err := r.authorService.FindAll(ctx)
+	res, err := r.authorService.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (r *queryResolver) Authors(ctx context.Context) ([]*model.Author, error) {
 
 // Borrowers is the resolver for the borrowers field.
 func (r *queryResolver) Borrowers(ctx context.Context) ([]*model.Borrower, error) {
-	borrowers, err := r.borrowerService.FindAll(ctx)
+	borrowers, err := r.borrowerService.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}

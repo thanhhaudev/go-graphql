@@ -19,9 +19,9 @@ func (a *AuthorService) Create(ctx context.Context, input *model.CreateAuthorInp
 	return a.authorRepository.Create(ctx, input.ToAuthor())
 }
 
-// FindAll returns all authors
-func (a *AuthorService) FindAll(ctx context.Context) ([]*model.Author, error) {
-	return a.authorRepository.FindAll(ctx)
+// GetAll returns all authors
+func (a *AuthorService) GetAll(ctx context.Context) ([]*model.Author, error) {
+	return a.authorRepository.GetAll(ctx)
 }
 
 // FindByID returns an author by id

@@ -45,9 +45,9 @@ func Migrations(db *gorm.DB) *gormigrate.Gormigrate {
 			},
 		},
 		{
-			ID: "00005_create_borrowers_books_table",
+			ID: "00005_create_borrower_books_table",
 			Migrate: func(tx *gorm.DB) error {
-				return tx.AutoMigrate(&model.BorrowersBooks{})
+				return tx.AutoMigrate(&model.BorrowerBook{})
 			},
 			Rollback: func(tx *gorm.DB) error {
 				return tx.Migrator().DropTable("borrowers_books")

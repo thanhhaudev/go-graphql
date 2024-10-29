@@ -7,6 +7,8 @@ all: build
 
 build:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) build --no-cache
+build/cache:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) build
 run:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) up -d
 stop:
@@ -23,3 +25,5 @@ migrate/refresh:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/migrate/main.go --action=refresh
 seed:
 	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go run src/cmd/seed/main.go
+tidy:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) run --rm graphql go mod tidy
