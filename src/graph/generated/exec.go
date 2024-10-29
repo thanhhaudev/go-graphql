@@ -81,7 +81,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		BorrowBook     func(childComplexity int, borrowerID string, bookID string) int
+		BorrowBook     func(childComplexity int, input *model.BorrowBookInput) int
 		CreateAuthor   func(childComplexity int, input model.CreateAuthorInput) int
 		CreateBook     func(childComplexity int, input model.CreateBookInput) int
 		CreateBorrower func(childComplexity int, input model.CreateBorrowerInput) int
@@ -116,7 +116,7 @@ type MutationResolver interface {
 	CreateAuthor(ctx context.Context, input model.CreateAuthorInput) (*model.Author, error)
 	CreateBorrower(ctx context.Context, input model.CreateBorrowerInput) (*model.Borrower, error)
 	UpdateBorrower(ctx context.Context, id string, input model.UpdateBorrowerInput) (*model.Borrower, error)
-	BorrowBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
+	BorrowBook(ctx context.Context, input *model.BorrowBookInput) (*model.Borrower, error)
 	ReturnBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
 }
 type QueryResolver interface {
@@ -304,7 +304,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.BorrowBook(childComplexity, args["borrowerId"].(string), args["bookId"].(string)), true
+		return e.complexity.Mutation.BorrowBook(childComplexity, args["input"].(*model.BorrowBookInput)), true
 
 	case "Mutation.createAuthor":
 		if e.complexity.Mutation.CreateAuthor == nil {
@@ -443,6 +443,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputBorrowBookInput,
 		ec.unmarshalInputCreateAuthorInput,
 		ec.unmarshalInputCreateBookInput,
 		ec.unmarshalInputCreateBorrowerInput,
@@ -599,6 +600,13 @@ input UpdateBorrowerInput {
     birthDate: Time
 }
 
+input BorrowBookInput {
+    borrowerId: ID!
+    bookId: ID!
+    quantity: Int!
+    dueDate: Time!
+}
+
 type Borrower {
     id: ID!
     name: String!
@@ -615,7 +623,7 @@ type Borrower {
     createAuthor(input: CreateAuthorInput!): Author!
     createBorrower(input: CreateBorrowerInput!): Borrower!
     updateBorrower(id: ID!, input: UpdateBorrowerInput!): Borrower!
-    borrowBook(borrowerId: ID!, bookId: ID!): Borrower!
+    borrowBook(input: BorrowBookInput): Borrower!
     returnBook(borrowerId: ID!, bookId: ID!): Borrower!
 }
 `, BuiltIn: false},
@@ -638,41 +646,23 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_borrowBook_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	arg0, err := ec.field_Mutation_borrowBook_argsBorrowerID(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_borrowBook_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["borrowerId"] = arg0
-	arg1, err := ec.field_Mutation_borrowBook_argsBookID(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["bookId"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Mutation_borrowBook_argsBorrowerID(
+func (ec *executionContext) field_Mutation_borrowBook_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("borrowerId"))
-	if tmp, ok := rawArgs["borrowerId"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
+) (*model.BorrowBookInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalOBorrowBookInput2ᚖgithubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐBorrowBookInput(ctx, tmp)
 	}
 
-	var zeroVal string
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Mutation_borrowBook_argsBookID(
-	ctx context.Context,
-	rawArgs map[string]interface{},
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("bookId"))
-	if tmp, ok := rawArgs["bookId"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
-	}
-
-	var zeroVal string
+	var zeroVal *model.BorrowBookInput
 	return zeroVal, nil
 }
 
@@ -2359,7 +2349,7 @@ func (ec *executionContext) _Mutation_borrowBook(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().BorrowBook(rctx, fc.Args["borrowerId"].(string), fc.Args["bookId"].(string))
+		return ec.resolvers.Mutation().BorrowBook(rctx, fc.Args["input"].(*model.BorrowBookInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4777,6 +4767,54 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputBorrowBookInput(ctx context.Context, obj interface{}) (model.BorrowBookInput, error) {
+	var it model.BorrowBookInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"borrowerId", "bookId", "quantity", "dueDate"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "borrowerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("borrowerId"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BorrowerID = data
+		case "bookId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bookId"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BookID = data
+		case "quantity":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("quantity"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Quantity = data
+		case "dueDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDate"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DueDate = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateAuthorInput(ctx context.Context, obj interface{}) (model.CreateAuthorInput, error) {
 	var it model.CreateAuthorInput
 	asMap := map[string]interface{}{}
@@ -6587,6 +6625,14 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOBorrowBookInput2ᚖgithubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐBorrowBookInput(ctx context.Context, v interface{}) (*model.BorrowBookInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputBorrowBookInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOBorrower2ᚖgithubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐBorrower(ctx context.Context, sel ast.SelectionSet, v *model.Borrower) graphql.Marshaler {

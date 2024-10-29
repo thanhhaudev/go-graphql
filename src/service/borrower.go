@@ -6,10 +6,12 @@ import (
 
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 	"github.com/thanhhaudev/go-graphql/src/repository"
+	"gorm.io/datatypes"
 )
 
 type BorrowerService struct {
 	borrowerRepository repository.BorrowerRepository
+	bookRepository     repository.BookRepository
 }
 
 func (b *BorrowerService) Create(ctx context.Context, input *model.CreateBorrowerInput) (*model.Borrower, error) {
@@ -61,6 +63,55 @@ func (b *BorrowerService) FindBooksByID(ctx context.Context, borrowerID int) ([]
 	return books, nil
 }
 
-func NewBorrowerService(borrowerRepository repository.BorrowerRepository) *BorrowerService {
-	return &BorrowerService{borrowerRepository: borrowerRepository}
+func (b *BorrowerService) BorrowBook(ctx context.Context, input *model.BorrowBookInput) (*model.Borrower, error) {
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+
+	book, err := b.bookRepository.FindByID(ctx, input.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if the book has enough quantity
+	if book.Quantity < input.Quantity {
+		return nil, fmt.Errorf("not enough quantity for book %q", book.Title)
+	}
+
+	book.DecrementQuantity(input.Quantity)
+
+	borrower, err := b.borrowerRepository.FindByID(ctx, input.BorrowerID)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if the borrower has already borrowed the book
+	for _, bb := range borrower.Borrowed {
+		if bb.BookID == input.BookID && bb.Status == model.BorrowedStatus {
+			return nil, fmt.Errorf("borrower has already borrowed %d copies of book %q", bb.Quantity, book.Title)
+		}
+	}
+
+	borrowed := model.BorrowerBook{
+		Borrower: borrower,
+		Book:     book,
+		Quantity: input.Quantity,
+		DueDate:  datatypes.Date(input.DueDate),
+	}
+
+	borrower.Borrowed = append(borrower.Borrowed, &borrowed)
+
+	err = b.borrowerRepository.BorrowBook(ctx, borrower, book)
+	if err != nil {
+		return nil, err
+	}
+
+	return borrower, nil
+}
+
+func NewBorrowerService(
+	borrowerRepository repository.BorrowerRepository,
+	bookRepository repository.BookRepository,
+) *BorrowerService {
+	return &BorrowerService{borrowerRepository: borrowerRepository, bookRepository: bookRepository}
 }

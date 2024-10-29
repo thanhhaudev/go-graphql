@@ -12,6 +12,13 @@ input UpdateBorrowerInput {
     birthDate: Time
 }
 
+input BorrowBookInput {
+    borrowerId: ID!
+    bookId: ID!
+    quantity: Int!
+    dueDate: Time!
+}
+
 type Borrower {
     id: ID!
     name: String!
