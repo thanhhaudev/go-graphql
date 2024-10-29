@@ -6,6 +6,7 @@ import (
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 	"github.com/thanhhaudev/go-graphql/src/repository"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type borrowerRepository struct {
@@ -23,7 +24,7 @@ func (b *borrowerRepository) GetAll(ctx context.Context) ([]*model.Borrower, err
 
 func (b *borrowerRepository) FindByID(ctx context.Context, id int) (*model.Borrower, error) {
 	var borrower model.Borrower
-	if err := b.db.WithContext(ctx).First(&borrower, id).Error; err != nil {
+	if err := b.db.WithContext(ctx).Preload("Borrowed").First(&borrower, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -62,6 +63,25 @@ func (b *borrowerRepository) Update(ctx context.Context, model *model.Borrower) 
 	}
 
 	return model, nil
+}
+
+func (b *borrowerRepository) BorrowBook(ctx context.Context, borrower *model.Borrower, book *model.Book) error {
+	return b.db.Transaction(func(tx *gorm.DB) error {
+		// update borrower
+		if err := b.db.WithContext(ctx).Model(borrower).
+			Clauses(clause.OnConflict{DoNothing: true}).
+			Session(&gorm.Session{FullSaveAssociations: true}).
+			Updates(borrower).Error; err != nil {
+			return err
+		}
+
+		// update book quantity
+		if err := b.db.WithContext(ctx).Model(book).Update("quantity", book.Quantity).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func NewBorrowerRepository(db *gorm.DB) repository.BorrowerRepository {

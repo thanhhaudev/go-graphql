@@ -114,3 +114,11 @@ func (b Book) TableName() string {
 func (b *Book) SetAuthors(authors []*Author) {
 	b.Authors = authors
 }
+
+func (b *Book) DecrementQuantity(q int) {
+	b.Quantity -= q
+}
+
+func (b *Book) IncrementQuantity(q int) {
+	b.Quantity += q
+}

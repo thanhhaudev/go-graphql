@@ -50,7 +50,7 @@ func Migrations(db *gorm.DB) *gormigrate.Gormigrate {
 				return tx.AutoMigrate(&model.BorrowerBook{})
 			},
 			Rollback: func(tx *gorm.DB) error {
-				return tx.Migrator().DropTable("borrowers_books")
+				return tx.Migrator().DropTable("borrower_books")
 			},
 		},
 	})

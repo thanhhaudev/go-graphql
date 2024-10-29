@@ -42,7 +42,7 @@ func main() {
 
 	authorService := service.NewAuthorService(authorRepo)
 	bookService := service.NewBookService(bookRepo, authorRepo)
-	borrowerService := service.NewBorrowerService(borrowerRepo)
+	borrowerService := service.NewBorrowerService(borrowerRepo, bookRepo)
 
 	defer db.Close() // Close database connection when main function exits
 

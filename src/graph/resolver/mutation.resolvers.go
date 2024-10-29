@@ -49,8 +49,8 @@ func (r *mutationResolver) UpdateBorrower(ctx context.Context, id string, input 
 }
 
 // BorrowBook is the resolver for the borrowBook field.
-func (r *mutationResolver) BorrowBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error) {
-	panic(fmt.Errorf("not implemented: BorrowBook - borrowBook"))
+func (r *mutationResolver) BorrowBook(ctx context.Context, input *model.BorrowBookInput) (*model.Borrower, error) {
+	return r.borrowerService.BorrowBook(ctx, input)
 }
 
 // ReturnBook is the resolver for the returnBook field.

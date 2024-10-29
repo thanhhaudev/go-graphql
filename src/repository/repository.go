@@ -31,4 +31,5 @@ type BorrowerRepository interface {
 	FindBorrowerBooksByID(ctx context.Context, borrowerID int) ([]*model.BorrowerBook, error)
 	Create(ctx context.Context, model *model.Borrower) (*model.Borrower, error)
 	Update(ctx context.Context, model *model.Borrower) (*model.Borrower, error)
+	BorrowBook(ctx context.Context, borrower *model.Borrower, book *model.Book) error
 }
