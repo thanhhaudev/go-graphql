@@ -44,6 +44,51 @@ func (c *CreateBorrowerInput) ToBorrower() *Borrower {
 	}
 }
 
+type UpdateBorrowerInput struct {
+	Name      *string    `json:"name"`
+	Address   *string    `json:"address"`
+	TelNumber *string    `json:"telNumber"`
+	BirthDate *time.Time `json:"birthDate"`
+}
+
+func (u *UpdateBorrowerInput) Validate() error {
+	if u.Name != nil && *u.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+
+	if u.Address != nil && *u.Address == "" {
+		return fmt.Errorf("address is required")
+	}
+
+	if u.TelNumber != nil && *u.TelNumber == "" {
+		return fmt.Errorf("telNumber is required")
+	}
+
+	if u.BirthDate != nil && u.BirthDate.IsZero() {
+		return fmt.Errorf("birthDate is required")
+	}
+
+	return nil
+}
+
+func (u *UpdateBorrowerInput) Patch(b *Borrower) {
+	if u.Name != nil {
+		b.Name = *u.Name
+	}
+
+	if u.Address != nil {
+		b.Address = *u.Address
+	}
+
+	if u.TelNumber != nil {
+		b.TelNumber = *u.TelNumber
+	}
+
+	if u.BirthDate != nil {
+		b.BirthDate = datatypes.Date(*u.BirthDate)
+	}
+}
+
 type Borrower struct {
 	ID        int             `gorm:"primaryKey" json:"id"`
 	Name      string          `json:"name"`

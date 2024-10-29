@@ -5,6 +5,13 @@ input CreateBorrowerInput {
     birthDate: Time!
 }
 
+input UpdateBorrowerInput {
+    name: String
+    address: String
+    telNumber: String
+    birthDate: Time
+}
+
 type Borrower {
     id: ID!
     name: String!

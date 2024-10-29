@@ -24,6 +24,21 @@ func (b *BorrowerService) Create(ctx context.Context, input *model.CreateBorrowe
 	return b.borrowerRepository.Create(ctx, input.ToBorrower())
 }
 
+func (b *BorrowerService) Update(ctx context.Context, id int, input *model.UpdateBorrowerInput) (*model.Borrower, error) {
+	if err := input.Validate(); err != nil {
+		return nil, err
+	}
+
+	borrower, err := b.borrowerRepository.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	input.Patch(borrower)
+
+	return b.borrowerRepository.Update(ctx, borrower)
+}
+
 func (b *BorrowerService) GetAll(ctx context.Context) ([]*model.Borrower, error) {
 	return b.borrowerRepository.GetAll(ctx)
 }

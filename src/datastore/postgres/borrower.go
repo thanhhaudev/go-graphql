@@ -48,17 +48,20 @@ func (b *borrowerRepository) FindByTelNumber(ctx context.Context, telNumber stri
 	return &borrower, nil
 }
 
-func (b *borrowerRepository) Create(ctx context.Context, input *model.Borrower) (*model.Borrower, error) {
-	if err := b.db.WithContext(ctx).Create(input).Error; err != nil {
+func (b *borrowerRepository) Create(ctx context.Context, model *model.Borrower) (*model.Borrower, error) {
+	if err := b.db.WithContext(ctx).Create(model).Error; err != nil {
 		return nil, err
 	}
 
-	return input, nil
+	return model, nil
 }
 
-func (b *borrowerRepository) Update(ctx context.Context, input *model.Borrower) (*model.Borrower, error) {
-	//TODO implement me
-	panic("implement me")
+func (b *borrowerRepository) Update(ctx context.Context, model *model.Borrower) (*model.Borrower, error) {
+	if err := b.db.WithContext(ctx).Model(model).Updates(model).Error; err != nil {
+		return nil, err
+	}
+
+	return model, nil
 }
 
 func NewBorrowerRepository(db *gorm.DB) repository.BorrowerRepository {
