@@ -87,6 +87,7 @@ type ComplexityRoot struct {
 		CreateBorrower func(childComplexity int, input model.CreateBorrowerInput) int
 		ReturnBook     func(childComplexity int, borrowerID string, bookID string) int
 		UpdateBook     func(childComplexity int, id string, input model.UpdateBookInput) int
+		UpdateBorrower func(childComplexity int, id string, input model.UpdateBorrowerInput) int
 	}
 
 	Query struct {
@@ -114,6 +115,7 @@ type MutationResolver interface {
 	UpdateBook(ctx context.Context, id string, input model.UpdateBookInput) (*model.Book, error)
 	CreateAuthor(ctx context.Context, input model.CreateAuthorInput) (*model.Author, error)
 	CreateBorrower(ctx context.Context, input model.CreateBorrowerInput) (*model.Borrower, error)
+	UpdateBorrower(ctx context.Context, id string, input model.UpdateBorrowerInput) (*model.Borrower, error)
 	BorrowBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
 	ReturnBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
 }
@@ -364,6 +366,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateBook(childComplexity, args["id"].(string), args["input"].(model.UpdateBookInput)), true
 
+	case "Mutation.updateBorrower":
+		if e.complexity.Mutation.UpdateBorrower == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateBorrower_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateBorrower(childComplexity, args["id"].(string), args["input"].(model.UpdateBorrowerInput)), true
+
 	case "Query.author":
 		if e.complexity.Query.Author == nil {
 			break
@@ -433,6 +447,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateBookInput,
 		ec.unmarshalInputCreateBorrowerInput,
 		ec.unmarshalInputUpdateBookInput,
+		ec.unmarshalInputUpdateBorrowerInput,
 	)
 	first := true
 
@@ -577,6 +592,13 @@ type Book {
     birthDate: Time!
 }
 
+input UpdateBorrowerInput {
+    name: String
+    address: String
+    telNumber: String
+    birthDate: Time
+}
+
 type Borrower {
     id: ID!
     name: String!
@@ -592,6 +614,7 @@ type Borrower {
     updateBook(id: ID!, input: UpdateBookInput!): Book!
     createAuthor(input: CreateAuthorInput!): Author!
     createBorrower(input: CreateBorrowerInput!): Borrower!
+    updateBorrower(id: ID!, input: UpdateBorrowerInput!): Borrower!
     borrowBook(borrowerId: ID!, bookId: ID!): Borrower!
     returnBook(borrowerId: ID!, bookId: ID!): Borrower!
 }
@@ -801,6 +824,47 @@ func (ec *executionContext) field_Mutation_updateBook_argsInput(
 	}
 
 	var zeroVal model.UpdateBookInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateBorrower_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_Mutation_updateBorrower_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := ec.field_Mutation_updateBorrower_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateBorrower_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateBorrower_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (model.UpdateBorrowerInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateBorrowerInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐUpdateBorrowerInput(ctx, tmp)
+	}
+
+	var zeroVal model.UpdateBorrowerInput
 	return zeroVal, nil
 }
 
@@ -2202,6 +2266,79 @@ func (ec *executionContext) fieldContext_Mutation_createBorrower(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createBorrower_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateBorrower(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateBorrower(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateBorrower(rctx, fc.Args["id"].(string), fc.Args["input"].(model.UpdateBorrowerInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Borrower)
+	fc.Result = res
+	return ec.marshalNBorrower2ᚖgithubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐBorrower(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateBorrower(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Borrower_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Borrower_name(ctx, field)
+			case "address":
+				return ec.fieldContext_Borrower_address(ctx, field)
+			case "telNumber":
+				return ec.fieldContext_Borrower_telNumber(ctx, field)
+			case "birthDate":
+				return ec.fieldContext_Borrower_birthDate(ctx, field)
+			case "books":
+				return ec.fieldContext_Borrower_books(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Borrower_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Borrower_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Borrower", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateBorrower_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4825,6 +4962,54 @@ func (ec *executionContext) unmarshalInputUpdateBookInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateBorrowerInput(ctx context.Context, obj interface{}) (model.UpdateBorrowerInput, error) {
+	var it model.UpdateBorrowerInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "address", "telNumber", "birthDate"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "address":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Address = data
+		case "telNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("telNumber"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TelNumber = data
+		case "birthDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthDate"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BirthDate = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -5207,6 +5392,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createBorrower":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createBorrower(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateBorrower":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateBorrower(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -6096,6 +6288,11 @@ func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel
 
 func (ec *executionContext) unmarshalNUpdateBookInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐUpdateBookInput(ctx context.Context, v interface{}) (model.UpdateBookInput, error) {
 	res, err := ec.unmarshalInputUpdateBookInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateBorrowerInput2githubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐUpdateBorrowerInput(ctx context.Context, v interface{}) (model.UpdateBorrowerInput, error) {
+	res, err := ec.unmarshalInputUpdateBorrowerInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
