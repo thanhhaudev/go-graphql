@@ -19,7 +19,7 @@ func (r *borrowerResolver) BirthDate(ctx context.Context, obj *model.Borrower) (
 
 // Books is the resolver for the books field.
 func (r *borrowerResolver) Books(ctx context.Context, obj *model.Borrower) ([]*model.Book, error) {
-	books, err := r.bookService.FindBooksByBorrowerID(ctx, obj.ID)
+	books, err := r.borrowerService.FindBooksByID(ctx, obj.ID)
 	if err != nil {
 		return nil, err
 	}

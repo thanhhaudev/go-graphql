@@ -69,8 +69,8 @@ func (b *BookService) Update(ctx context.Context, id int, input *model.UpdateBoo
 	return book, nil
 }
 
-func (b *BookService) FindAll(ctx context.Context) ([]*model.Book, error) {
-	return b.bookRepository.FindAll(ctx)
+func (b *BookService) GetAll(ctx context.Context) ([]*model.Book, error) {
+	return b.bookRepository.GetAll(ctx)
 }
 
 func (b *BookService) FindByID(ctx context.Context, id int) (*model.Book, error) {
@@ -79,10 +79,6 @@ func (b *BookService) FindByID(ctx context.Context, id int) (*model.Book, error)
 
 func (b *BookService) FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error) {
 	return b.bookRepository.FindBooksByAuthorID(ctx, authorID)
-}
-
-func (b *BookService) FindBooksByBorrowerID(ctx context.Context, borrowerID int) ([]*model.Book, error) {
-	return b.bookRepository.FindBooksByBorrowerID(ctx, borrowerID)
 }
 
 func NewBookService(b repository.BookRepository, au repository.AuthorRepository) *BookService {

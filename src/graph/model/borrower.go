@@ -45,12 +45,12 @@ func (c *CreateBorrowerInput) ToBorrower() *Borrower {
 }
 
 type Borrower struct {
-	ID        int            `gorm:"primaryKey" json:"id"`
-	Name      string         `json:"name"`
-	Address   string         `json:"address"`
-	TelNumber string         `json:"telNumber"`
-	BirthDate datatypes.Date `gorm:"type:DATE;not null;" json:"birthDate"`
-	Books     []*Book        `gorm:"many2many:borrowers_books" json:"books"`
+	ID        int             `gorm:"primaryKey" json:"id"`
+	Name      string          `json:"name"`
+	Address   string          `json:"address"`
+	TelNumber string          `json:"telNumber"`
+	BirthDate datatypes.Date  `gorm:"type:DATE;not null;" json:"birthDate"`
+	Borrowed  []*BorrowerBook `gorm:"foreignKey:BorrowerID;references:ID" json:"borrowed"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`

@@ -6,17 +6,16 @@ import (
 )
 
 type BookRepository interface {
-	FindAll(ctx context.Context) ([]*model.Book, error)
+	GetAll(ctx context.Context) ([]*model.Book, error)
 	FindByID(ctx context.Context, id int) (*model.Book, error)
 	FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error)
-	FindBooksByBorrowerID(ctx context.Context, borrowerID int) ([]*model.Book, error)
 	Create(ctx context.Context, model *model.Book) error
 	Update(ctx context.Context, model *model.Book) error
 	Delete(ctx context.Context, id int) error
 }
 
 type AuthorRepository interface {
-	FindAll(ctx context.Context) ([]*model.Author, error)
+	GetAll(ctx context.Context) ([]*model.Author, error)
 	FindByID(ctx context.Context, id int) (*model.Author, error)
 	FindByIDs(ctx context.Context, ids []int) ([]*model.Author, error)
 	FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error)
@@ -26,9 +25,10 @@ type AuthorRepository interface {
 }
 
 type BorrowerRepository interface {
-	FindAll(ctx context.Context) ([]*model.Borrower, error)
+	GetAll(ctx context.Context) ([]*model.Borrower, error)
 	FindByID(ctx context.Context, id int) (*model.Borrower, error)
 	FindByTelNumber(ctx context.Context, telNumber string) (*model.Borrower, error)
+	FindBorrowerBooksByID(ctx context.Context, borrowerID int) ([]*model.BorrowerBook, error)
 	Create(ctx context.Context, input *model.Borrower) (*model.Borrower, error)
 	Update(ctx context.Context, input *model.Borrower) (*model.Borrower, error)
 }

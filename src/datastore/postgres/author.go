@@ -12,7 +12,7 @@ type authorRepository struct {
 	db *gorm.DB
 }
 
-func (a *authorRepository) FindAll(ctx context.Context) ([]*model.Author, error) {
+func (a *authorRepository) GetAll(ctx context.Context) ([]*model.Author, error) {
 	var authors []*model.Author
 	if err := a.db.WithContext(ctx).Find(&authors).Error; err != nil {
 		return nil, err

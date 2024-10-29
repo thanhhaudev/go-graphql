@@ -20,16 +20,7 @@ func (b *bookRepository) FindBooksByAuthorID(ctx context.Context, authorID int) 
 	return author.Books, nil
 }
 
-func (b *bookRepository) FindBooksByBorrowerID(ctx context.Context, borrowerID int) ([]*model.Book, error) {
-	var borrower model.Borrower
-	if err := b.db.WithContext(ctx).Preload("Books").First(&borrower, borrowerID).Error; err != nil {
-		return nil, err
-	}
-
-	return borrower.Books, nil
-}
-
-func (b *bookRepository) FindAll(ctx context.Context) ([]*model.Book, error) {
+func (b *bookRepository) GetAll(ctx context.Context) ([]*model.Book, error) {
 	var books []*model.Book
 	if err := b.db.WithContext(ctx).Find(&books).Error; err != nil {
 		return nil, err
