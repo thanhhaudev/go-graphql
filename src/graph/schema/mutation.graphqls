@@ -5,5 +5,5 @@ type Mutation {
     createBorrower(input: CreateBorrowerInput!): Borrower!
     updateBorrower(id: ID!, input: UpdateBorrowerInput!): Borrower!
     borrowBook(input: BorrowBookInput): Borrower!
-    returnBook(borrowerId: ID!, bookId: ID!): Borrower!
+    returnBook(input: ReturnBookInput): Borrower!
 }

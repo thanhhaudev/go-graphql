@@ -19,6 +19,11 @@ input BorrowBookInput {
     dueDate: Time!
 }
 
+input ReturnBookInput {
+    borrowerId: ID!
+    bookId: ID!
+}
+
 type Borrower {
     id: ID!
     name: String!

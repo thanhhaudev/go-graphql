@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
@@ -54,8 +53,8 @@ func (r *mutationResolver) BorrowBook(ctx context.Context, input *model.BorrowBo
 }
 
 // ReturnBook is the resolver for the returnBook field.
-func (r *mutationResolver) ReturnBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error) {
-	panic(fmt.Errorf("not implemented: ReturnBook - returnBook"))
+func (r *mutationResolver) ReturnBook(ctx context.Context, input *model.ReturnBookInput) (*model.Borrower, error) {
+	return r.borrowerService.ReturnBook(ctx, input)
 }
 
 // Mutation returns generated.MutationResolver implementation.

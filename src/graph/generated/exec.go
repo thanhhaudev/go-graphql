@@ -85,7 +85,7 @@ type ComplexityRoot struct {
 		CreateAuthor   func(childComplexity int, input model.CreateAuthorInput) int
 		CreateBook     func(childComplexity int, input model.CreateBookInput) int
 		CreateBorrower func(childComplexity int, input model.CreateBorrowerInput) int
-		ReturnBook     func(childComplexity int, borrowerID string, bookID string) int
+		ReturnBook     func(childComplexity int, input *model.ReturnBookInput) int
 		UpdateBook     func(childComplexity int, id string, input model.UpdateBookInput) int
 		UpdateBorrower func(childComplexity int, id string, input model.UpdateBorrowerInput) int
 	}
@@ -117,7 +117,7 @@ type MutationResolver interface {
 	CreateBorrower(ctx context.Context, input model.CreateBorrowerInput) (*model.Borrower, error)
 	UpdateBorrower(ctx context.Context, id string, input model.UpdateBorrowerInput) (*model.Borrower, error)
 	BorrowBook(ctx context.Context, input *model.BorrowBookInput) (*model.Borrower, error)
-	ReturnBook(ctx context.Context, borrowerID string, bookID string) (*model.Borrower, error)
+	ReturnBook(ctx context.Context, input *model.ReturnBookInput) (*model.Borrower, error)
 }
 type QueryResolver interface {
 	Books(ctx context.Context) ([]*model.Book, error)
@@ -352,7 +352,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ReturnBook(childComplexity, args["borrowerId"].(string), args["bookId"].(string)), true
+		return e.complexity.Mutation.ReturnBook(childComplexity, args["input"].(*model.ReturnBookInput)), true
 
 	case "Mutation.updateBook":
 		if e.complexity.Mutation.UpdateBook == nil {
@@ -447,6 +447,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreateAuthorInput,
 		ec.unmarshalInputCreateBookInput,
 		ec.unmarshalInputCreateBorrowerInput,
+		ec.unmarshalInputReturnBookInput,
 		ec.unmarshalInputUpdateBookInput,
 		ec.unmarshalInputUpdateBorrowerInput,
 	)
@@ -607,6 +608,11 @@ input BorrowBookInput {
     dueDate: Time!
 }
 
+input ReturnBookInput {
+    borrowerId: ID!
+    bookId: ID!
+}
+
 type Borrower {
     id: ID!
     name: String!
@@ -624,7 +630,7 @@ type Borrower {
     createBorrower(input: CreateBorrowerInput!): Borrower!
     updateBorrower(id: ID!, input: UpdateBorrowerInput!): Borrower!
     borrowBook(input: BorrowBookInput): Borrower!
-    returnBook(borrowerId: ID!, bookId: ID!): Borrower!
+    returnBook(input: ReturnBookInput): Borrower!
 }
 `, BuiltIn: false},
 	{Name: "../schema/query.graphqls", Input: `type Query {
@@ -738,41 +744,23 @@ func (ec *executionContext) field_Mutation_createBorrower_argsInput(
 func (ec *executionContext) field_Mutation_returnBook_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	arg0, err := ec.field_Mutation_returnBook_argsBorrowerID(ctx, rawArgs)
+	arg0, err := ec.field_Mutation_returnBook_argsInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
 	}
-	args["borrowerId"] = arg0
-	arg1, err := ec.field_Mutation_returnBook_argsBookID(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["bookId"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
-func (ec *executionContext) field_Mutation_returnBook_argsBorrowerID(
+func (ec *executionContext) field_Mutation_returnBook_argsInput(
 	ctx context.Context,
 	rawArgs map[string]interface{},
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("borrowerId"))
-	if tmp, ok := rawArgs["borrowerId"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
+) (*model.ReturnBookInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalOReturnBookInput2ᚖgithubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐReturnBookInput(ctx, tmp)
 	}
 
-	var zeroVal string
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Mutation_returnBook_argsBookID(
-	ctx context.Context,
-	rawArgs map[string]interface{},
-) (string, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("bookId"))
-	if tmp, ok := rawArgs["bookId"]; ok {
-		return ec.unmarshalNID2string(ctx, tmp)
-	}
-
-	var zeroVal string
+	var zeroVal *model.ReturnBookInput
 	return zeroVal, nil
 }
 
@@ -2422,7 +2410,7 @@ func (ec *executionContext) _Mutation_returnBook(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ReturnBook(rctx, fc.Args["borrowerId"].(string), fc.Args["bookId"].(string))
+		return ec.resolvers.Mutation().ReturnBook(rctx, fc.Args["input"].(*model.ReturnBookInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4945,6 +4933,40 @@ func (ec *executionContext) unmarshalInputCreateBorrowerInput(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputReturnBookInput(ctx context.Context, obj interface{}) (model.ReturnBookInput, error) {
+	var it model.ReturnBookInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"borrowerId", "bookId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "borrowerId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("borrowerId"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BorrowerID = data
+		case "bookId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bookId"))
+			data, err := ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BookID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateBookInput(ctx context.Context, obj interface{}) (model.UpdateBookInput, error) {
 	var it model.UpdateBookInput
 	asMap := map[string]interface{}{}
@@ -6720,6 +6742,14 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOReturnBookInput2ᚖgithubᚗcomᚋthanhhaudevᚋgoᚑgraphqlᚋsrcᚋgraphᚋmodelᚐReturnBookInput(ctx context.Context, v interface{}) (*model.ReturnBookInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputReturnBookInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

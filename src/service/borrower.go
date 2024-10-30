@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 	"github.com/thanhhaudev/go-graphql/src/repository"
@@ -100,6 +101,43 @@ func (b *BorrowerService) BorrowBook(ctx context.Context, input *model.BorrowBoo
 	}
 
 	borrower.Borrowed = append(borrower.Borrowed, &borrowed)
+
+	err = b.borrowerRepository.BorrowBook(ctx, borrower, book)
+	if err != nil {
+		return nil, err
+	}
+
+	return borrower, nil
+}
+
+func (b *BorrowerService) ReturnBook(ctx context.Context, input *model.ReturnBookInput) (*model.Borrower, error) {
+	borrower, err := b.borrowerRepository.FindByID(ctx, input.BorrowerID)
+	if err != nil {
+		return nil, err
+	}
+
+	book, err := b.bookRepository.FindByID(ctx, input.BookID)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if the borrower has borrowed the book
+	var borrowed *model.BorrowerBook
+	for _, bb := range borrower.Borrowed {
+		if bb.BookID == book.ID && bb.Status == model.BorrowedStatus {
+			borrowed = bb
+			break
+		}
+	}
+
+	if borrowed == nil {
+		return nil, fmt.Errorf("borrower has not borrowed book %q", book.Title)
+	}
+
+	now := time.Now()
+	book.IncrementQuantity(borrowed.Quantity)
+	borrowed.Status = model.ReturnedStatus
+	borrowed.ReturnedAt = &now
 
 	err = b.borrowerRepository.BorrowBook(ctx, borrower, book)
 	if err != nil {
