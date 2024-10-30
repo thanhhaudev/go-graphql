@@ -1,4 +1,4 @@
-.PHONY: all build run logs generate migrate seed stop
+.PHONY: all build run logs generate migrate seed stop migrate/rollback migrate/refresh tidy
 
 # Variables
 DOCKER_COMPOSE_FILE=docker-compose.yaml
