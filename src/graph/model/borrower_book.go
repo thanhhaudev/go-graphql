@@ -20,6 +20,11 @@ type BorrowBookInput struct {
 	DueDate    time.Time `json:"dueDate"`
 }
 
+type ReturnBookInput struct {
+	BorrowerID int `json:"borrowerId"`
+	BookID     int `json:"bookId"`
+}
+
 func (b *BorrowBookInput) Validate() error {
 	if b.Quantity <= 0 {
 		return fmt.Errorf("quantity must be greater than 0")

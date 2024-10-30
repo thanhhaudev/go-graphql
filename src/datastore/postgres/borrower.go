@@ -33,7 +33,10 @@ func (b *borrowerRepository) FindByID(ctx context.Context, id int) (*model.Borro
 
 func (b *borrowerRepository) FindBorrowerBooksByID(ctx context.Context, borrowerID int) ([]*model.BorrowerBook, error) {
 	var borrowerBooks []*model.BorrowerBook
-	if err := b.db.WithContext(ctx).Preload("Book").Where("borrower_id = ?", borrowerID).Find(&borrowerBooks).Error; err != nil {
+	if err := b.db.WithContext(ctx).
+		Preload("Book").
+		Where("borrower_id = ? AND status != ?", borrowerID, model.ReturnedStatus).
+		Find(&borrowerBooks).Error; err != nil {
 		return nil, err
 	}
 
@@ -65,6 +68,7 @@ func (b *borrowerRepository) Update(ctx context.Context, model *model.Borrower) 
 	return model, nil
 }
 
+// BorrowBook update borrower and book quantity
 func (b *borrowerRepository) BorrowBook(ctx context.Context, borrower *model.Borrower, book *model.Book) error {
 	return b.db.Transaction(func(tx *gorm.DB) error {
 		// update borrower
