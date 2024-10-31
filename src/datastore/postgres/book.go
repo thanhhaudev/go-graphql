@@ -11,6 +11,15 @@ type bookRepository struct {
 	db *gorm.DB
 }
 
+func (b *bookRepository) FindByIDs(ctx context.Context, ids []int) ([]*model.Book, error) {
+	var books []*model.Book
+	if err := b.db.WithContext(ctx).Preload("Authors").Find(&books, ids).Error; err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
 func (b *bookRepository) FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error) {
 	var author model.Author
 	if err := b.db.WithContext(ctx).Preload("Books").First(&author, authorID).Error; err != nil {

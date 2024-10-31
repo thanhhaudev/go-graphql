@@ -8,6 +8,7 @@ import (
 type BookRepository interface {
 	GetAll(ctx context.Context) ([]*model.Book, error)
 	FindByID(ctx context.Context, id int) (*model.Book, error)
+	FindByIDs(ctx context.Context, ids []int) ([]*model.Book, error)
 	FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error)
 	Create(ctx context.Context, m *model.Book) error
 	Update(ctx context.Context, m *model.Book) error
@@ -27,6 +28,7 @@ type AuthorRepository interface {
 type BorrowerRepository interface {
 	GetAll(ctx context.Context) ([]*model.Borrower, error)
 	FindByID(ctx context.Context, id int) (*model.Borrower, error)
+	FindByIDs(ctx context.Context, ids []int) ([]*model.Borrower, error)
 	FindByTelNumber(ctx context.Context, telNumber string) (*model.Borrower, error)
 	FindBorrowerBooksByID(ctx context.Context, borrowerID int) ([]*model.BorrowerBook, error)
 	Create(ctx context.Context, m *model.Borrower) (*model.Borrower, error)

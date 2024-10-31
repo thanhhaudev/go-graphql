@@ -31,6 +31,15 @@ func (b *borrowerRepository) FindByID(ctx context.Context, id int) (*model.Borro
 	return &borrower, nil
 }
 
+func (b *borrowerRepository) FindByIDs(ctx context.Context, ids []int) ([]*model.Borrower, error) {
+	var borrowers []*model.Borrower
+	if err := b.db.WithContext(ctx).Find(&borrowers, ids).Error; err != nil {
+		return nil, err
+	}
+
+	return borrowers, nil
+}
+
 func (b *borrowerRepository) FindBorrowerBooksByID(ctx context.Context, borrowerID int) ([]*model.BorrowerBook, error) {
 	var borrowerBooks []*model.BorrowerBook
 	if err := b.db.WithContext(ctx).
