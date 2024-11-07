@@ -14,7 +14,7 @@ import (
 // this is the sub-resolver for the authors field in the Book type. So, it will be called for each book in the list of books.
 // Use the data loader to load the authors for the book instead of querying the database directly to optimize the performance.
 func (r *bookResolver) Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error) {
-	authors, err := r.authorService.FindAuthorsByBookID(ctx, obj.ID)
+	authors, err := r.authorService.GetByBookID(ctx, obj.ID)
 	if err != nil {
 		return nil, err
 	}

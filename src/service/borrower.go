@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
+	"github.com/thanhhaudev/go-graphql/src/loader"
 	"github.com/thanhhaudev/go-graphql/src/repository"
 	"gorm.io/datatypes"
 )
@@ -47,18 +48,18 @@ func (b *BorrowerService) GetAll(ctx context.Context) ([]*model.Borrower, error)
 }
 
 func (b *BorrowerService) FindByID(ctx context.Context, id int) (*model.Borrower, error) {
-	return b.borrowerRepository.FindByID(ctx, id)
+	return loader.FindBorrower(ctx, id)
 }
 
 func (b *BorrowerService) FindBooksByID(ctx context.Context, borrowerID int) ([]*model.Book, error) {
-	borrowed, err := b.borrowerRepository.FindBorrowerBooksByID(ctx, borrowerID)
+	borrower, err := loader.FindBorrower(ctx, borrowerID)
 	if err != nil {
 		return nil, err
 	}
 
-	books := make([]*model.Book, 0, len(borrowed))
-	for _, bb := range borrowed {
-		books = append(books, bb.Book)
+	books := make([]*model.Book, len(borrower.Borrowed))
+	for i, bb := range borrower.Borrowed {
+		books[i] = bb.Book
 	}
 
 	return books, nil

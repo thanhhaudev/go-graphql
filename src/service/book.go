@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
+	"github.com/thanhhaudev/go-graphql/src/loader"
 	"github.com/thanhhaudev/go-graphql/src/repository"
 )
 
@@ -18,7 +19,7 @@ func (b *BookService) Create(ctx context.Context, input *model.CreateBookInput) 
 		return nil, err
 	}
 
-	authors, err := b.authorRepository.FindByIDs(ctx, input.AuthorIds)
+	authors, err := b.authorRepository.GetByIDs(ctx, input.AuthorIds)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +49,7 @@ func (b *BookService) Update(ctx context.Context, id int, input *model.UpdateBoo
 	}
 
 	if input.AuthorIds != nil && len(input.AuthorIds) > 0 {
-		authors, err := b.authorRepository.FindByIDs(ctx, input.AuthorIds)
+		authors, err := b.authorRepository.GetByIDs(ctx, input.AuthorIds)
 		if err != nil {
 			return nil, err
 		}
@@ -74,11 +75,21 @@ func (b *BookService) GetAll(ctx context.Context) ([]*model.Book, error) {
 }
 
 func (b *BookService) FindByID(ctx context.Context, id int) (*model.Book, error) {
-	return b.bookRepository.FindByID(ctx, id)
+	book, err := loader.FindBook(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return book, nil
 }
 
-func (b *BookService) FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error) {
-	return b.bookRepository.FindBooksByAuthorID(ctx, authorID)
+func (b *BookService) GetByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error) {
+	author, err := loader.FindAuthor(ctx, authorID)
+	if err != nil {
+		return nil, err
+	}
+
+	return author.Books, nil
 }
 
 func NewBookService(b repository.BookRepository, au repository.AuthorRepository) *BookService {

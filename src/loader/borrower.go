@@ -13,7 +13,7 @@ type borrowerLoader struct {
 
 // getBorrowers implements a batch function that loads borrowers by IDs
 func (b *borrowerLoader) getBorrowers(ctx context.Context, ids []int) ([]*model.Borrower, []error) {
-	borrowers, err := b.borrowerRepository.FindByIDs(ctx, ids)
+	borrowers, err := b.borrowerRepository.GetByIDs(ctx, ids)
 	if err != nil {
 		return nil, []error{err}
 	}

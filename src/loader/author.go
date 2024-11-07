@@ -12,7 +12,7 @@ type authorLoader struct {
 
 // getAuthors implements a batch function that loads authors by IDs
 func (a *authorLoader) getAuthors(ctx context.Context, ids []int) ([]*model.Author, []error) {
-	authors, err := a.authorRepository.FindByIDs(ctx, ids)
+	authors, err := a.authorRepository.GetByIDs(ctx, ids)
 	if err != nil {
 		return nil, []error{err}
 	}
