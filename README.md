@@ -102,6 +102,61 @@ The system's database schema is as follows:
 ## Usage Examples
 
 ### GraphQL Queries and Mutations
+- **Get all Books**:
+    ```graphql
+    query {
+        books {
+            id
+            title
+            authors {
+                id
+                name
+            }
+        }
+    }
+    ```
+
+- **Get a Book by ID**:
+    ```graphql
+    query {
+        book(id: 1) {
+            id
+            title
+            authors {
+                id
+                name
+            }
+        }
+    }
+    ```
+
+- **Get all Authors**:
+    ```graphql
+    query {
+        authors {
+            id
+            name
+            books {
+                id
+                title
+            }
+        }
+    }
+    ```
+
+- **Get all Borrowers**:
+    ```graphql
+    query {
+        borrowers {
+            id
+            name
+            books {
+                id
+                title
+            }
+        }
+    }
+    ```
 
 - **Create a Book**:
     ```graphql
