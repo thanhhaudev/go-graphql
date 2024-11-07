@@ -10,7 +10,7 @@ import (
 type Author struct {
 	ID        int     `gorm:"primaryKey"`
 	Name      string  `json:"name"`
-	Books     []*Book `gorm:"many2many:authors_books" json:"books"`
+	Books     []*Book `gorm:"many2many:authors_books;foreignKey:ID;joinForeignKey:AuthorID;References:ID;JoinReferences:BookID"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
@@ -18,6 +18,10 @@ type Author struct {
 
 func (a Author) TableName() string {
 	return "authors"
+}
+
+func (a *Author) GetID() int {
+	return a.ID
 }
 
 type CreateAuthorInput struct {

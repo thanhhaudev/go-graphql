@@ -104,3 +104,7 @@ type Borrower struct {
 func (b Borrower) TableName() string {
 	return "borrowers"
 }
+
+func (b *Borrower) GetID() int {
+	return b.ID
+}

@@ -29,7 +29,7 @@ func TestBookService(t *testing.T) {
 			name: "CreateBook",
 			setup: func() {
 				mockBookRepo.EXPECT().Create(context.Background(), gomock.Any()).Return(nil)
-				mockAuthorRepo.EXPECT().FindByIDs(context.Background(), []int{1}).Return([]*model.Author{
+				mockAuthorRepo.EXPECT().GetByIDs(context.Background(), []int{1}).Return([]*model.Author{
 					{
 						ID: 1,
 					},

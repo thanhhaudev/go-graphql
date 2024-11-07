@@ -12,6 +12,7 @@ import (
 	"github.com/thanhhaudev/go-graphql/src/datastore/postgres"
 	"github.com/thanhhaudev/go-graphql/src/graph/generated"
 	"github.com/thanhhaudev/go-graphql/src/graph/resolver"
+	"github.com/thanhhaudev/go-graphql/src/loader"
 	"github.com/thanhhaudev/go-graphql/src/service"
 )
 
@@ -46,10 +47,16 @@ func main() {
 
 	defer db.Close() // Close database connection when main function exits
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+	// create the query handler
+	var srv http.Handler = handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
 		Resolvers: resolver.NewResolver(authorService, bookService, borrowerService),
 	}))
 
+	// inject data loaders into the context
+	// wrap the srv handler with the middleware
+	srv = loader.Middleware(authorRepo, bookRepo, borrowerRepo, srv)
+
+	// route handlers
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 

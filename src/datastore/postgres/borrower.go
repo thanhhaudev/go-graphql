@@ -24,23 +24,24 @@ func (b *borrowerRepository) GetAll(ctx context.Context) ([]*model.Borrower, err
 
 func (b *borrowerRepository) FindByID(ctx context.Context, id int) (*model.Borrower, error) {
 	var borrower model.Borrower
-	if err := b.db.WithContext(ctx).Preload("Borrowed").First(&borrower, id).Error; err != nil {
+	if err := b.db.WithContext(ctx).Preload("Borrowed.Book").First(&borrower, id).Error; err != nil {
 		return nil, err
 	}
 
 	return &borrower, nil
 }
 
-func (b *borrowerRepository) FindBorrowerBooksByID(ctx context.Context, borrowerID int) ([]*model.BorrowerBook, error) {
-	var borrowerBooks []*model.BorrowerBook
+func (b *borrowerRepository) GetByIDs(ctx context.Context, ids []int) ([]*model.Borrower, error) {
+	var borrowers []*model.Borrower
 	if err := b.db.WithContext(ctx).
-		Preload("Book").
-		Where("borrower_id = ? AND status != ?", borrowerID, model.ReturnedStatus).
-		Find(&borrowerBooks).Error; err != nil {
+		Preload("Borrowed", func(db *gorm.DB) *gorm.DB {
+			return db.Joins("Book").Where("status = ?", model.BorrowedStatus)
+		}).
+		Find(&borrowers, ids).Error; err != nil {
 		return nil, err
 	}
 
-	return borrowerBooks, nil
+	return borrowers, nil
 }
 
 func (b *borrowerRepository) FindByTelNumber(ctx context.Context, telNumber string) (*model.Borrower, error) {

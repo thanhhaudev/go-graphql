@@ -111,6 +111,10 @@ func (b Book) TableName() string {
 	return "books"
 }
 
+func (b *Book) GetID() int {
+	return b.ID
+}
+
 func (b *Book) SetAuthors(authors []*Author) {
 	b.Authors = authors
 }

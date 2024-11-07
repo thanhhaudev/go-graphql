@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
+	"github.com/thanhhaudev/go-graphql/src/loader"
 	"github.com/thanhhaudev/go-graphql/src/repository"
 )
 
@@ -26,11 +27,16 @@ func (a *AuthorService) GetAll(ctx context.Context) ([]*model.Author, error) {
 
 // FindByID returns an author by id
 func (a *AuthorService) FindByID(ctx context.Context, id int) (*model.Author, error) {
-	return a.authorRepository.FindByID(ctx, id)
+	return loader.FindAuthor(ctx, id)
 }
 
-func (a *AuthorService) FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error) {
-	return a.authorRepository.FindAuthorsByBookID(ctx, bookID)
+func (a *AuthorService) GetByBookID(ctx context.Context, bookID int) ([]*model.Author, error) {
+	book, err := loader.FindBook(ctx, bookID)
+	if err != nil {
+		return nil, err
+	}
+
+	return book.Authors, nil
 }
 
 func NewAuthorService(authorRepository repository.AuthorRepository) *AuthorService {

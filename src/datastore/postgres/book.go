@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+
 	"github.com/thanhhaudev/go-graphql/src/graph/model"
 	"github.com/thanhhaudev/go-graphql/src/repository"
 	"gorm.io/gorm"
@@ -11,13 +12,13 @@ type bookRepository struct {
 	db *gorm.DB
 }
 
-func (b *bookRepository) FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error) {
-	var author model.Author
-	if err := b.db.WithContext(ctx).Preload("Books").First(&author, authorID).Error; err != nil {
+func (b *bookRepository) GetByIDs(ctx context.Context, ids []int) ([]*model.Book, error) {
+	var books []*model.Book
+	if err := b.db.WithContext(ctx).Preload("Authors").Find(&books, ids).Error; err != nil {
 		return nil, err
 	}
 
-	return author.Books, nil
+	return books, nil
 }
 
 func (b *bookRepository) GetAll(ctx context.Context) ([]*model.Book, error) {
