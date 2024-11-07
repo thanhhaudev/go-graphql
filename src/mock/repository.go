@@ -69,21 +69,6 @@ func (mr *MockBookRepositoryMockRecorder) Delete(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockBookRepository)(nil).Delete), ctx, id)
 }
 
-// FindBooksByAuthorID mocks base method.
-func (m *MockBookRepository) FindBooksByAuthorID(ctx context.Context, authorID int) ([]*model.Book, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindBooksByAuthorID", ctx, authorID)
-	ret0, _ := ret[0].([]*model.Book)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindBooksByAuthorID indicates an expected call of FindBooksByAuthorID.
-func (mr *MockBookRepositoryMockRecorder) FindBooksByAuthorID(ctx, authorID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindBooksByAuthorID", reflect.TypeOf((*MockBookRepository)(nil).FindBooksByAuthorID), ctx, authorID)
-}
-
 // FindByID mocks base method.
 func (m *MockBookRepository) FindByID(ctx context.Context, id int) (*model.Book, error) {
 	m.ctrl.T.Helper()
@@ -112,6 +97,21 @@ func (m *MockBookRepository) GetAll(ctx context.Context) ([]*model.Book, error) 
 func (mr *MockBookRepositoryMockRecorder) GetAll(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockBookRepository)(nil).GetAll), ctx)
+}
+
+// GetByIDs mocks base method.
+func (m *MockBookRepository) GetByIDs(ctx context.Context, ids []int) ([]*model.Book, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByIDs", ctx, ids)
+	ret0, _ := ret[0].([]*model.Book)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByIDs indicates an expected call of GetByIDs.
+func (mr *MockBookRepositoryMockRecorder) GetByIDs(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDs", reflect.TypeOf((*MockBookRepository)(nil).GetByIDs), ctx, ids)
 }
 
 // Update mocks base method.
@@ -181,21 +181,6 @@ func (mr *MockAuthorRepositoryMockRecorder) Delete(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockAuthorRepository)(nil).Delete), ctx, id)
 }
 
-// FindAuthorsByBookID mocks base method.
-func (m *MockAuthorRepository) FindAuthorsByBookID(ctx context.Context, bookID int) ([]*model.Author, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAuthorsByBookID", ctx, bookID)
-	ret0, _ := ret[0].([]*model.Author)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindAuthorsByBookID indicates an expected call of FindAuthorsByBookID.
-func (mr *MockAuthorRepositoryMockRecorder) FindAuthorsByBookID(ctx, bookID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAuthorsByBookID", reflect.TypeOf((*MockAuthorRepository)(nil).FindAuthorsByBookID), ctx, bookID)
-}
-
 // FindByID mocks base method.
 func (m *MockAuthorRepository) FindByID(ctx context.Context, id int) (*model.Author, error) {
 	m.ctrl.T.Helper()
@@ -211,21 +196,6 @@ func (mr *MockAuthorRepositoryMockRecorder) FindByID(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockAuthorRepository)(nil).FindByID), ctx, id)
 }
 
-// FindByIDs mocks base method.
-func (m *MockAuthorRepository) FindByIDs(ctx context.Context, ids []int) ([]*model.Author, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByIDs", ctx, ids)
-	ret0, _ := ret[0].([]*model.Author)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindByIDs indicates an expected call of FindByIDs.
-func (mr *MockAuthorRepositoryMockRecorder) FindByIDs(ctx, ids any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByIDs", reflect.TypeOf((*MockAuthorRepository)(nil).FindByIDs), ctx, ids)
-}
-
 // GetAll mocks base method.
 func (m *MockAuthorRepository) GetAll(ctx context.Context) ([]*model.Author, error) {
 	m.ctrl.T.Helper()
@@ -239,6 +209,21 @@ func (m *MockAuthorRepository) GetAll(ctx context.Context) ([]*model.Author, err
 func (mr *MockAuthorRepositoryMockRecorder) GetAll(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockAuthorRepository)(nil).GetAll), ctx)
+}
+
+// GetByIDs mocks base method.
+func (m *MockAuthorRepository) GetByIDs(ctx context.Context, ids []int) ([]*model.Author, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByIDs", ctx, ids)
+	ret0, _ := ret[0].([]*model.Author)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByIDs indicates an expected call of GetByIDs.
+func (mr *MockAuthorRepositoryMockRecorder) GetByIDs(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDs", reflect.TypeOf((*MockAuthorRepository)(nil).GetByIDs), ctx, ids)
 }
 
 // Update mocks base method.
@@ -309,21 +294,6 @@ func (mr *MockBorrowerRepositoryMockRecorder) Create(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockBorrowerRepository)(nil).Create), ctx, m)
 }
 
-// FindBorrowerBooksByID mocks base method.
-func (m *MockBorrowerRepository) FindBorrowerBooksByID(ctx context.Context, borrowerID int) ([]*model.BorrowerBook, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindBorrowerBooksByID", ctx, borrowerID)
-	ret0, _ := ret[0].([]*model.BorrowerBook)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindBorrowerBooksByID indicates an expected call of FindBorrowerBooksByID.
-func (mr *MockBorrowerRepositoryMockRecorder) FindBorrowerBooksByID(ctx, borrowerID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindBorrowerBooksByID", reflect.TypeOf((*MockBorrowerRepository)(nil).FindBorrowerBooksByID), ctx, borrowerID)
-}
-
 // FindByID mocks base method.
 func (m *MockBorrowerRepository) FindByID(ctx context.Context, id int) (*model.Borrower, error) {
 	m.ctrl.T.Helper()
@@ -367,6 +337,21 @@ func (m *MockBorrowerRepository) GetAll(ctx context.Context) ([]*model.Borrower,
 func (mr *MockBorrowerRepositoryMockRecorder) GetAll(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockBorrowerRepository)(nil).GetAll), ctx)
+}
+
+// GetByIDs mocks base method.
+func (m *MockBorrowerRepository) GetByIDs(ctx context.Context, ids []int) ([]*model.Borrower, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByIDs", ctx, ids)
+	ret0, _ := ret[0].([]*model.Borrower)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByIDs indicates an expected call of GetByIDs.
+func (mr *MockBorrowerRepositoryMockRecorder) GetByIDs(ctx, ids any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDs", reflect.TypeOf((*MockBorrowerRepository)(nil).GetByIDs), ctx, ids)
 }
 
 // Update mocks base method.
